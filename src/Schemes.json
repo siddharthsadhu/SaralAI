@@ -1,0 +1,666 @@
+[
+  {
+    "scheme_id": "PMAY_U",
+    "scheme_name": "Pradhan Mantri Awas Yojana – Urban (PMAY-U)",
+    "category": "Housing",
+    "coverage": {
+      "type": "Central Government (Ministry of Housing & Urban Affairs)",
+      "states_applicable": "All Urban Areas in States/UTs (as per Census 2011 and subsequently notified towns)"
+    },
+    "who_is_it_for": {
+      "short": "Eligible urban households without a pucca house",
+      "detailed": [
+        "Urban households in EWS, LIG and MIG categories without a pucca house anywhere in India",
+        "Slum dwellers living in inadequate housing in notified or non-notified slums",
+        "Beneficiaries identified and verified by States/UTs and Urban Local Bodies (ULBs) as per PMAY-U guidelines"
+      ]
+    },
+    "benefits": {
+      "short": "Central assistance and housing support through four verticals",
+      "details": [
+        "Central assistance to States/UTs and implementing agencies through four verticals: In-situ Slum Redevelopment (ISSR), Credit Linked Subsidy Scheme (CLSS), Affordable Housing in Partnership (AHP), and Beneficiary-led Individual House construction/enhancement (BLC)",
+        "For EWS, minimum carpet area generally up to 30 square metres (with flexibility to States/UTs subject to Ministry approval)",
+        "Under CLSS, eligible beneficiaries receive interest subsidy on housing loans; subsidy processed through Central Nodal Agencies via CLSS Awas Portal (CLAP)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Beneficiary family must not own a pucca house in any part of India in the name of any family member", "mandatory": true },
+      { "condition": "Beneficiary family is defined to include husband, wife, unmarried sons and unmarried daughters", "mandatory": true },
+      { "condition": "Income category (EWS/LIG/MIG) and urban status determined as per latest limits notified by MoHUA and adopted by State/UT", "mandatory": true },
+      { "condition": "Ownership/co-ownership in name of adult female member promoted in guidelines", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar and identity proof of beneficiary and family members", "mandatory": true },
+      { "document_name": "Proof of income or self-declaration for income category", "mandatory": true },
+      { "document_name": "Proof of not owning a pucca house (self-declaration / property records as per State norms)", "mandatory": true },
+      { "document_name": "Proof of residence in urban area or slum (ration card, voter ID, electricity bill, slum certificate etc. as applicable)", "mandatory": true },
+      { "document_name": "Bank account details for DBT and CLSS subsidy credit", "mandatory": true }
+    ],
+    "application_process": {
+      "mode": "Identification / Online / Assisted",
+      "steps": [
+        "Beneficiaries identified through demand surveys and applications collected by ULBs or State agencies",
+        "Online application facility provided in earlier phases on PMAY(U) portal and UMANG; States/UTs may run own portals and outreach camps",
+        "Under CLSS, beneficiaries apply for housing loans with eligible Primary Lending Institutions which upload claims to CLAP portal for subsidy processing"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Is PMAY-U same as PMAY-G (rural)?", "answer": "No. PMAY-U is only for urban areas; rural households belong under PMAY-G." },
+      { "question": "Is female ownership always mandatory?", "answer": "Guidelines emphasise female ownership/co-ownership; exact documentation and relaxations are as per State/UT and MoHUA clarifications." },
+      { "question": "Is house size fixed at 30 sqm for EWS?", "answer": "30 sq.m is a minimum benchmark for EWS; States/UTs can approve larger sizes with Ministry approval." }
+    ],
+    "limitations_and_notes": [
+      "Timeline and closure of new sanctions depend on central approvals and State-wise targets; citizens should confirm if new applications are being accepted locally",
+      "Actual subsidy amounts and income limits for CLSS are as per latest MoHUA and National Housing Bank / HUDCO notifications which may be periodically revised"
+    ],
+    "source_information": {
+      "official_website": "https://pmaymis.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'PMAY Urban')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "PMAY_G",
+    "scheme_name": "Pradhan Mantri Awas Yojana – Gramin (PMAY-G)",
+    "category": "Housing",
+    "coverage": {
+      "type": "Central Government (Ministry of Rural Development)",
+      "states_applicable": "All rural areas as per SECC and State/UT lists"
+    },
+    "who_is_it_for": {
+      "short": "Identified rural households without pucca houses",
+      "detailed": [
+        "Rural households that are houseless or living in kutcha/dilapidated houses as per Socio Economic and Caste Census (SECC) and verified lists",
+        "Priority to poorest and most vulnerable sections as determined by Ministry/States"
+      ]
+    },
+    "benefits": {
+      "short": "Financial assistance in instalments to construct pucca houses",
+      "details": [
+        "Financial assistance in instalments to construct a pucca house with hygienic cooking space; unit assistance is shared between Centre and State as per funding pattern",
+        "Use of geo-tagging and IT/DBT platforms to monitor progress and transfer assistance directly into beneficiaries’ bank accounts"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Household listed in PMAY-G permanent waitlist prepared using SECC data and approved by Gram Sabha and competent authorities", "mandatory": true },
+      { "condition": "Beneficiary must not already have a pucca house as per scheme definition", "mandatory": true },
+      { "condition": "Vulnerability and deprivation parameters applied as per PMAY-G guidelines for prioritisation", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar and identity details of head of household", "mandatory": true },
+      { "document_name": "Bank account details for DBT", "mandatory": true },
+      { "document_name": "Land ownership or allotment proof if available (State mechanisms for landless)", "mandatory": false },
+      { "document_name": "SECC and Gram Sabha resolution details (maintained by local authorities)", "mandatory": false }
+    ],
+    "application_process": {
+      "mode": "Selection-based / Offline / MIS-updates",
+      "steps": [
+        "Beneficiaries are selected from SECC-based lists and Gram Sabha approvals; no open online application form",
+        "Sanctions issued by block/district authorities and uploaded on PMAY-G MIS system",
+        "Beneficiaries receive instalments linked to construction stages; progress verified through field inspections and geo-tagged photographs"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Can citizens self-apply online?", "answer": "Generally no; citizens must be part of approved lists and approach Gram Panchayat for clarification." },
+      { "question": "How to change beneficiary name?", "answer": "Approach local authorities with supporting documents; changes follow PMAY-G guidelines." }
+    ],
+    "limitations_and_notes": [
+      "Assistance amount, cost norms and unit size may differ by State/UT and are revised from time to time",
+      "Land availability for landless households handled through convergence with other schemes and State policies"
+    ],
+    "source_information": {
+      "official_website": "https://pmayg.nic.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'PM Awas Yojana Gramin')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "PM_KISAN",
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "category": "Farmers / Income Support",
+    "coverage": {
+      "type": "Central Government (Department of Agriculture & Farmers Welfare)",
+      "states_applicable": "All States and Union Territories of India (based on land records)"
+    },
+    "who_is_it_for": {
+      "short": "Landholding farmer families",
+      "detailed": [
+        "Small and marginal farmer families and other eligible landholding farmer families meeting PM-KISAN guidelines",
+        "A farmer family generally defined as husband, wife and minor children who collectively own cultivable land as per land records"
+      ]
+    },
+    "benefits": {
+      "short": "Direct income support transferred to bank accounts",
+      "details": [
+        "Direct transfer of income support in equal instalments each year to eligible farmer families via DBT",
+        "Scheme operational with multiple instalments released (portal indicated 16th instalment release in Feb 2024 in provided content)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Eligibility primarily based on ownership of cultivable land recorded in State/UT land records", "mandatory": true },
+      { "condition": "Certain higher economic status categories are excluded (e.g., institutional landholders, specified professionals and high-income categories) as listed on PM-KISAN portal", "mandatory": true },
+      { "condition": "eKYC / Aadhaar seeding with bank accounts and land records is required for registered farmers", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar of farmer and family members", "mandatory": true },
+      { "document_name": "Land ownership documents or records of rights", "mandatory": true },
+      { "document_name": "Bank account details for DBT", "mandatory": true },
+      { "document_name": "Mobile number for OTP-based services", "mandatory": true }
+    ],
+    "application_process": {
+      "mode": "Online / Offline / Assisted",
+      "steps": [
+        "Farmers can register via State/UT agriculture department offices, designated nodal officers, Common Service Centres (CSCs), or online on PM-KISAN portal subject to State adoption",
+        "eKYC completed via OTP-based method on portal or biometric eKYC at CSCs",
+        "After verification by State/UT authorities and Aadhaar/bank validation, beneficiaries are included and receive instalments"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Are tenant/sharecropper farmers eligible?", "answer": "Scheme primarily for recorded land-owning farmer families; tenant/sharecropper coverage depends on State decisions based on guidelines." },
+      { "question": "Why are instalments pending?", "answer": "Often due to incomplete eKYC, Aadhaar-bank mismatch or land record issues; portal and helpline support resolution." }
+    ],
+    "limitations_and_notes": [
+      "Benefit amount, instalment schedule and exclusions are governed by central notifications and can be updated; farmers should check latest FAQs and guidelines on PM-KISAN portal"
+    ],
+    "source_information": {
+      "official_website": "https://pmkisan.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'PM Kisan Samman Nidhi')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "PM_JAY",
+    "scheme_name": "Ayushman Bharat – Pradhan Mantri Jan Arogya Yojana (AB-PMJAY)",
+    "category": "Health Assurance",
+    "coverage": {
+      "type": "Central Government (National Health Authority)",
+      "states_applicable": "All States and Union Territories of India (empanelled hospitals nationwide)"
+    },
+    "who_is_it_for": {
+      "short": "Identified poor and vulnerable families (SECC-based)",
+      "detailed": [
+        "Beneficiary families identified through SECC and State/UT approved inclusion criteria",
+        "Vulnerable rural and urban households with deprivation indicators as defined in scheme guidelines"
+      ]
+    },
+    "benefits": {
+      "short": "Cashless hospitalisation cover for secondary and tertiary care",
+      "details": [
+        "Health cover up to a specified annual amount per family (family floater) for listed procedures in empanelled hospitals",
+        "Cashless and paperless access to services at the point of care using e-cards",
+        "Coverage includes hospitalisation, diagnostics, medicines, pre- and post-hospitalisation and ICU costs (as per PMJAY package lists)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Eligibility based on SECC database and State/UT approved lists", "mandatory": true },
+      { "condition": "Beneficiaries should confirm status via PM-JAY or NHA beneficiary portals", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar and other photo identity proofs as accepted by State Health Agency", "mandatory": true },
+      { "document_name": "Family details for beneficiary identification", "mandatory": true },
+      { "document_name": "PM-JAY e-card and identity proof for hospital admission and portability", "mandatory": true }
+    ],
+    "application_process": {
+      "mode": "Verification-based / Assisted",
+      "steps": [
+        "Beneficiaries identified from government databases and verified at designated centres (no general open online enrolment)",
+        "Check eligibility on official portals or visit empanelled hospitals / CSCs / Ayushman Mitra helpdesks for assistance",
+        "Upon verification, generate or print Ayushman e-card for cashless treatment at empanelled hospitals"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Can anyone self-register online?", "answer": "AB-PMJAY primarily uses existing databases and notified inclusion criteria; open self-registration is not the standard route." },
+      { "question": "Does PM-JAY combine with State schemes?", "answer": "Many States run converged or parallel schemes; beneficiaries should confirm scheme name and applicable limits on their card and State portals." }
+    ],
+    "limitations_and_notes": [
+      "Benefit limits, package rates and procedures covered are specified in PM-JAY package lists and are updated periodically by the National Health Authority",
+      "Actual empanelled hospitals and services vary by State/UT; use official hospital search portals for current lists"
+    ],
+    "source_information": {
+      "official_website": "https://pmjay.gov.in",
+      "beneficiary_portal": "https://beneficiary.nha.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'PMJAY')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "NFSA_PDS",
+    "scheme_name": "Public Distribution System under the National Food Security Act (NFSA) – Ration Cards",
+    "category": "Food Security / Subsidy",
+    "coverage": {
+      "type": "Central guidelines implemented by States/UTs",
+      "states_applicable": "All States and Union Territories (state-specific implementation)"
+    },
+    "who_is_it_for": {
+      "short": "Eligible households identified under NFSA and State lists",
+      "detailed": [
+        "Priority households and Antyodaya Anna Yojana (AAY) households identified by State/UT governments as per NFSA norms",
+        "Coverage determined by State-wise ceilings and criteria"
+      ]
+    },
+    "benefits": {
+      "short": "Subsidised foodgrains through Fair Price Shops",
+      "details": [
+        "Entitlement to specified quantities of foodgrains per person per month at central issue prices as notified under NFSA",
+        "Additional State schemes may provide extra commodities or quantities at subsidised rates (varies by State/UT)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Eligibility and ration card type determined by State/UT governments consistent with NFSA", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Identity documents of head of household and family members (Aadhaar, voter ID etc.)", "mandatory": true },
+      { "document_name": "Proof of residence (as required by State/UT)", "mandatory": true },
+      { "document_name": "Income or deprivation-related documents as per State rules", "mandatory": false }
+    ],
+    "application_process": {
+      "mode": "Varies by State (Online / Offline)",
+      "steps": [
+        "Apply online via State Food & Civil Supplies portals or offline at local ration offices / designated centres",
+        "Local authorities verify documents and issue ration cards; Aadhaar seeding may be used for portability where applicable"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Are rules same across country?", "answer": "NFSA sets national norms but exact eligibility, documentation and grievance mechanisms are handled by each State/UT PDS department." },
+      { "question": "Is portability (One Nation One Ration Card) universal?", "answer": "Portability availability and operation depends on implementation status; check the State portal." }
+    ],
+    "limitations_and_notes": [
+      "For exact current rules and entitlements, households must refer to their respective State Food & Civil Supplies website"
+    ],
+    "source_information": {
+      "official_website": "https://nfsa.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'Ration Card' / 'NFSA')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "PMJDY",
+    "scheme_name": "Pradhan Mantri Jan Dhan Yojana (PMJDY)",
+    "category": "Financial Inclusion",
+    "coverage": {
+      "type": "Central Government (Department of Financial Services)",
+      "states_applicable": "All States and Union Territories of India"
+    },
+    "who_is_it_for": {
+      "short": "Unbanked individuals",
+      "detailed": [
+        "Individuals (rural and urban) without basic savings bank accounts",
+        "Focus on economically weaker sections and excluded households"
+      ]
+    },
+    "benefits": {
+      "short": "Basic bank account access and financial inclusion services",
+      "details": [
+        "Opening of basic savings bank deposit accounts with zero minimum balance requirements",
+        "Access to RuPay debit card, direct benefit transfer (DBT), and financial inclusion services",
+        "Portal shows over 55 crore beneficiaries and significant account balances (as of early 2026 in provided content)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Any Indian citizen not having a basic savings bank account can generally open a PMJDY account subject to KYC norms and bank policies", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Officially valid documents as per KYC norms (Aadhaar, voter ID, PAN, driving licence) or simplified KYC for small accounts", "mandatory": true },
+      { "document_name": "Photograph and basic personal details", "mandatory": true }
+    ],
+    "application_process": {
+      "mode": "In-person / Assisted",
+      "steps": [
+        "Approach bank branches, Bank Mitras or participating banking outlets",
+        "Accounts opened on prescribed PMJDY or integrated forms; Aadhaar seeding encouraged for DBT"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Can one have multiple PMJDY accounts?", "answer": "Typically one basic savings account per person is required; customers should avoid multiple PMJDY accounts." },
+      { "question": "Will PMJDY convert to regular account?", "answer": "Banks may convert PMJDY accounts to regular savings accounts as per bank policy when limits are exceeded." }
+    ],
+    "limitations_and_notes": [
+      "Specific insurance, overdraft and other benefits depend on updated government and bank notifications and may change over time"
+    ],
+    "source_information": {
+      "official_website": "https://pmjdy.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'Pradhan Mantri Jan Dhan Yojana')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "SSY",
+    "scheme_name": "Sukanya Samriddhi Yojana (SSY)",
+    "category": "Savings / Child Benefit",
+    "coverage": {
+      "type": "Central Government (National Savings Institute / Ministry of Finance)",
+      "states_applicable": "All India (via Post Offices and authorised banks)"
+    },
+    "who_is_it_for": {
+      "short": "Girl children (residents of India)",
+      "detailed": [
+        "Girl children who are Indian residents; parents or legal guardians can open accounts in the name of a girl child"
+      ]
+    },
+    "benefits": {
+      "short": "Long-term savings with tax benefits for girl child",
+      "details": [
+        "Account can be opened till girl attains age of 10 years",
+        "One account per girl child; family limits apply as per scheme rules",
+        "Minimum deposit ₹250 and maximum deposit ₹1.5 lakh in a financial year (as per provided content)",
+        "Deposits qualify for deduction under Section 80C and interest earned exempt under Section 10",
+        "Matures after 21 years from date of opening; provisions for premature closure in case of marriage after age 18 and partial withdrawal for higher education"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Account must be opened in name of a girl child resident in India before she turns 10 years old", "mandatory": true },
+      { "condition": "Only one account allowed in name of a girl child (family limits apply)", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Birth certificate of the girl child", "mandatory": true },
+      { "document_name": "Identity and address proof of guardian", "mandatory": true },
+      { "document_name": "Photograph of child and guardian", "mandatory": true }
+    ],
+    "application_process": {
+      "mode": "In-person (Post Office / authorised banks)",
+      "steps": [
+        "Open account at designated Post Office or authorised bank with required documents",
+        "Make deposits in cash/cheque/allowed modes; account transferable across India between Post Office/banks",
+        "Follow rules for withdrawals, partial withdrawals for education and premature closure as per scheme"
+      ]
+    },
+    "common_confusions": [
+      { "question": "What is the interest rate?", "answer": "Interest rate is notified quarterly by Ministry of Finance; check official notifications or bank/post office displays." },
+      { "question": "What about NRI / non-resident status?", "answer": "Rules apply regarding continuation or closure if residency status changes; consult official scheme rules." }
+    ],
+    "limitations_and_notes": [
+      "Exact operational details (rates, tax rules) are notified periodically; refer to National Savings Institute / India Post for current rates"
+    ],
+    "source_information": {
+      "official_website": "https://www.nsiindia.gov.in/InternalPage.aspx?Id_Pk=89",
+      "indiapost_page": "https://www.indiapost.gov.in (SSY section)",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'Sukanya Samriddhi')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "PMUY",
+    "scheme_name": "Pradhan Mantri Ujjwala Yojana (PMUY)",
+    "category": "Clean Cooking / Energy",
+    "coverage": {
+      "type": "Central Government (implemented by Oil Marketing Companies and State agencies)",
+      "states_applicable": "All States and Union Territories as per PMUY guidelines"
+    },
+    "who_is_it_for": {
+      "short": "Women from eligible poor households",
+      "detailed": [
+        "Adult women belonging to eligible poor household categories notified under PMUY guidelines",
+        "Targeted towards women from families identified using deprivation criteria and approved lists"
+      ]
+    },
+    "benefits": {
+      "short": "Deposit-free LPG connection and initial consumables",
+      "details": [
+        "Deposit-free LPG connection in the name of the adult woman of the household",
+        "Cash assistance for PMUY connections (specified amounts indicated on PMUY portal for 14.2 kg and 5 kg cylinders as per provided content)",
+        "First LPG refill and stove (hotplate) provided free of cost along with the deposit-free connection (supplied by Oil Marketing Companies)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Applicant must be an adult woman belonging to an eligible poor household category as per PMUY guidelines", "mandatory": true },
+      { "condition": "Household should not already have an LPG connection in name of any family member", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar of applicant and family members (as required)", "mandatory": true },
+      { "document_name": "Proof of address and poverty/deprivation status (ration card, SECC-based list inclusion or other documents as notified)", "mandatory": true },
+      { "document_name": "Bank account details for receipt of subsidies where applicable", "mandatory": false }
+    ],
+    "application_process": {
+      "mode": "Distributor-assisted / Offline",
+      "steps": [
+        "Apply through LPG distributors or designated channels using prescribed forms",
+        "Oil Marketing Companies verify eligibility based on government lists and documentation and release connections",
+        "PMUY portal provides state-wise numbers and operational monitoring details"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Is subsidy same as free refills?", "answer": "Initial connection assistance, free first refill and stove are distinct from continuing LPG price subsidies which depend on broader LPG subsidy policy." },
+      { "question": "What if not on eligibility lists?", "answer": "Approach local LPG distributor or district nodal officers for resolution." }
+    ],
+    "limitations_and_notes": [
+      "LPG refill costs after the free refill must be paid by beneficiaries; other reliefs depend on broader subsidy policies",
+      "Exact eligibility categories and assistance components governed by updated PMUY guidelines and budget announcements"
+    ],
+    "source_information": {
+      "official_website": "https://www.pmuy.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'Pradhan Mantri Ujjwala Yojana')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "NSAP",
+    "scheme_name": "National Social Assistance Programme (NSAP) – Pension Schemes",
+    "category": "Social Assistance / Pensions",
+    "coverage": {
+      "type": "Central Government (Ministry of Rural Development) in convergence with States/UTs",
+      "states_applicable": "All States and Union Territories (state-specific implementation and top-ups)"
+    },
+    "who_is_it_for": {
+      "short": "Elderly, widows and persons with disabilities from eligible poor households",
+      "detailed": [
+        "Indira Gandhi National Old Age Pension Scheme (IGNOAPS): eligible elderly poor persons",
+        "Indira Gandhi National Widow Pension Scheme (IGNWPS): eligible widows in specified age groups",
+        "Indira Gandhi National Disability Pension Scheme (IGNDPS): persons with severe or multiple disabilities from eligible poor households"
+      ]
+    },
+    "benefits": {
+      "short": "Monthly pension assistance under sub-schemes",
+      "details": [
+        "Monthly pension assistance amounts under each sub-scheme as notified by Government of India and State governments",
+        "DBT progress and beneficiary counts reported on NSAP portal (continued operation through 2024–25 in provided content)"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Belong to a household identified as below the poverty line or meeting deprivation criteria defined in NSAP guidelines", "mandatory": true },
+      { "condition": "Meet age and disability thresholds specified for each sub-scheme", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Age proof (for old age and widow pensions)", "mandatory": true },
+      { "document_name": "Death certificate of husband (for widow pensions)", "mandatory": true },
+      { "document_name": "Disability certificate from competent medical authority (for disability pensions)", "mandatory": true },
+      { "document_name": "Identity and address proof and bank account details for DBT", "mandatory": true }
+    ],
+    "application_process": {
+      "mode": "Offline (local Social Welfare / Panchayat / Municipal offices)",
+      "steps": [
+        "Submit prescribed application form to Gram Panchayat/Municipal bodies or Social Welfare offices",
+        "District/State authorities prepare and approve beneficiary lists and upload to NSAP systems",
+        "Pensions disbursed regularly through bank/post office accounts via DBT"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Centre vs State pension top-ups?", "answer": "Beneficiaries may receive combined amounts from NSAP and parallel State-funded schemes; NSAP portal tracks central scheme separately." },
+      { "question": "Why are payments delayed?", "answer": "Delays often linked to bank account issues, Aadhaar seeding or verification status; resolve with local officials." }
+    ],
+    "limitations_and_notes": [
+      "Exact pension amounts, age and disability thresholds may differ by State/UT depending on top-up schemes; consult latest government orders"
+    ],
+    "source_information": {
+      "official_website": "https://nsap.nic.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'National Social Assistance Programme')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "PMKVY",
+    "scheme_name": "Pradhan Mantri Kaushal Vikas Yojana (PMKVY) / Skill India",
+    "category": "Skill Development / Employment",
+    "coverage": {
+      "type": "Central Government (Ministry of Skill Development & Entrepreneurship)",
+      "states_applicable": "All States and Union Territories (through approved training centres and partners)"
+    },
+    "who_is_it_for": {
+      "short": "Youth and workers seeking skill training",
+      "detailed": [
+        "Unemployed youth and school/college dropouts seeking skill training",
+        "Existing workers needing skill upgradation; priority groups (women, persons with disabilities, marginalised communities) under various components"
+      ]
+    },
+    "benefits": {
+      "short": "Industry-relevant skill training and certification",
+      "details": [
+        "Short-term training and Recognition of Prior Learning (RPL) through approved training centres",
+        "Skill certification under National Skills Qualification Framework (NSQF) and placement / self-employment support facilitated by training partners and Sector Skill Councils"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Indian citizens meeting age and other criteria of the current PMKVY phase", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar and identity proof", "mandatory": true },
+      { "document_name": "Educational qualification certificates where required by job role", "mandatory": false },
+      { "document_name": "Bank account details for any applicable benefits", "mandatory": false }
+    ],
+    "application_process": {
+      "mode": "In-person enrolment at approved training centres / online discovery",
+      "steps": [
+        "Search for relevant skill courses and training centres via Skill India portal or local Skill Development offices",
+        "Enroll at approved training centres as per PMKVY / State Skill Development Mission procedures",
+        "Undergo training, assessment and certification as per NSQF-aligned job roles"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Are training fees charged?", "answer": "PMKVY typically funds training costs for eligible candidates at approved centres; any charges must comply with official guidelines." },
+      { "question": "Is certification nationally recognised?", "answer": "Certificates are issued under NSQF-aligned qualifications; recognition depends on sector/employer but designed to be nationally standardised." }
+    ],
+    "limitations_and_notes": [
+      "PMKVY operates in distinct phases; components, priority sectors and implementation details differ by phase and may be updated"
+    ],
+    "source_information": {
+      "official_website": "https://www.skillindia.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'PM Kaushal Vikas Yojana')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  },
+
+  {
+    "scheme_id": "NSP",
+    "scheme_name": "National Scholarship Portal (NSP)",
+    "category": "Education / Scholarships",
+    "coverage": {
+      "type": "Central Government digital platform (multiple ministries & State schemes)",
+      "states_applicable": "All States and Union Territories (scheme-specific coverage)"
+    },
+    "who_is_it_for": {
+      "short": "Students eligible for various scholarship schemes",
+      "detailed": [
+        "School, college and university students across categories (SC/ST/OBC/minorities/persons with disabilities/economically weaker sections) depending on specific hosted schemes"
+      ]
+    },
+    "benefits": {
+      "short": "One-stop online application and DBT for multiple scholarships",
+      "details": [
+        "Online application, verification and disbursal of multiple scholarship schemes through an integrated platform",
+        "Transparency and direct benefit transfer of scholarship amounts into students’ bank accounts"
+      ]
+    },
+    "eligibility_criteria": [
+      { "condition": "Eligibility varies by individual scholarship hosted on NSP (income ceilings, marks, course and institution recognition as specified)", "mandatory": true }
+    ],
+    "required_documents": [
+      { "document_name": "Aadhaar (or other ID where permitted), bank account details and student photograph", "mandatory": true },
+      { "document_name": "Educational certificates, mark sheets and admission proof", "mandatory": true },
+      { "document_name": "Category, income and domicile certificates as applicable", "mandatory": false }
+    ],
+    "application_process": {
+      "mode": "Online",
+      "steps": [
+        "Register on NSP and create login",
+        "Fill scholarship application form for relevant scheme, upload required documents and submit within notified timeline",
+        "Applications pass through institute-level and State/Ministry-level verification before sanction and DBT"
+      ]
+    },
+    "common_confusions": [
+      { "question": "Can students apply to multiple scholarships?", "answer": "Follow instructions on whether multiple applications are allowed and priority rules where overlaps exist." },
+      { "question": "Difference between fresh and renewal?", "answer": "Schemes differentiate fresh and renewal applications; different forms and conditions may apply." }
+    ],
+    "limitations_and_notes": [
+      "Portal may experience heavy traffic or maintenance; students should monitor notifications and extended deadlines published by concerned ministries"
+    ],
+    "source_information": {
+      "official_website": "https://scholarships.gov.in",
+      "myscheme_page": "https://www.myscheme.gov.in (search 'National Scholarship Portal')",
+      "last_verified_on": "early 2026"
+    },
+    "ai_usage_rules": {
+      "can_explain": true,
+      "can_simplify": true,
+      "can_decide_eligibility": false,
+      "can_guarantee_benefit": false
+    }
+  }
+]
