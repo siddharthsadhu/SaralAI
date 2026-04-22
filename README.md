@@ -1,73 +1,86 @@
-# 🏛️ SaralAI
+# SaralAI 🇮🇳
 
-**SaralAI** is a premium, localized voice-first AI assistant designed to help Indian citizens understand and apply for government schemes effortlessly. By combining **Sarvam AI** for multilingual voice processing and **Google Gemini** for intelligent reasoning, it breaks down complex government jargon into simple, actionable steps in **11 Indian languages**.
+**SaralAI** is a voice-first AI assistant designed to help Indian citizens understand and access government schemes in their own local language. It translates complex government documentation into simple, actionable steps using state-of-the-art AI.
 
-![SaralAI Banner](https://img.shields.io/badge/Status-Production--Ready-success?style=for-the-badge)
-![Tech Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20Vite-blue?style=for-the-badge)
+![SaralAI Logo](public/logo.png)
 
-## 🌟 Key Features
+## 🚀 Key Features
 
-- **🗣️ Multilingual Voice Support**: Speak naturally in Hindi, Bengali, Gujarati, Tamil, and 7 other languages.
-- **📄 Document Assistant**: Smartly identifies exactly which documents you need for specific schemes.
-- **🗺️ Step-by-Step Guidance**: Converts complex application processes into easy tutorials.
-- **🔒 Secure Authentication**: Integrated with Google OAuth for personalized assistance.
-- **💎 Premium UI**: Modern, glassmorphic design optimized for mobile and web.
+- **Multilingual Support**: Available in 11 Indian languages (Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Odia, and English).
+- **Voice-First Interface**: Ask questions naturally using your voice.
+- **Smart Summarization**: Breaks down scheme details into Benefits, Eligibility, and Documents Needed.
+- **Step-by-Step Guidance**: Clear instructions on how to actually apply for each scheme.
+- **Official Grounding**: All information is grounded in verified government data sources.
 
-## 🛠️ Technology Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: React.js, Vite, Vanilla CSS (Premium Design System)
-- **Backend**: FastAPI (Python 3.9+)
-- **AI Engine**: 
-  - **Sarvam AI**: STT (Saaras), TTS (Bulbul), Translation (Mayura)
-  - **Google Gemini**: Intent detection and intelligent summarization
-- **Database**: PostgreSQL (via SQLAlchemy)
-- **Auth**: Google Cloud OAuth 2.0
+### Frontend
+- **Framework**: Vanilla JS / Vite (High performance, near-zero overhead)
+- **Styling**: Modern CSS3 with Custom Properties (Glassmorphism design)
+- **State Management**: Reactive local state system
+- **Authentication**: Google OAuth 2.0
 
-## 🚀 Quick Start (Local Development)
+### Backend
+- **Framework**: FastAPI (Python)
+- **AI Stack (Sarvam AI)**:
+  - **Saaras v3**: Robust LLM for Indian context.
+  - **Mayura v1**: High-accuracy translation.
+  - **Bulbul v3**: Natural-sounding multi-lingual Text-to-Speech.
+- **AI Stack (Google)**:
+  - **Gemini 1.5 Flash**: Lightning-fast intent classification and context retrieval.
+- **Database**: PostgreSQL
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/SaralAI.git
-cd SaralAI
+## 📦 Project Structure
+
+```text
+SaralAI/
+├── src/                # Frontend source code
+│   ├── components/     # UI components (Header, Buttons, etc.)
+│   ├── screens/        # App screens (Speak, Explanation, etc.)
+│   └── utils/          # Localisation and helpers
+├── backend/            # FastAPI Backend
+│   ├── routers/        # API endpoints
+│   ├── services/       # AI & Translation services
+│   └── models/         # Database schemas
+├── public/             # Static assets
+└── index.html          # App entry point
 ```
 
-### 2. Backend Setup
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py
-```
+## ⚙️ Setup & Installation
 
-### 3. Frontend Setup
-```bash
-# In the root directory
-npm install
-npm run dev
-```
+### Prerequisites
+- Python 3.9+
+- Node.js 16+
+- PostgreSQL
+- API Keys for Sarvam AI and Google AI Studio
 
-## ⚙️ Environment Variables
+### Local Development
 
-Create a `.env` file in the `backend/` folder:
-```env
-GOOGLE_API_KEY=your_gemini_key
-SARVAM_API_KEY=your_sarvam_key
-DATABASE_URL=postgresql://user:pass@localhost:5432/saralai
-GOOGLE_CLIENT_ID=your_id.apps.googleusercontent.com
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/USER_NAME/SaralAI.git
+   cd SaralAI
+   ```
 
-## 📦 Deployment Guide
+2. **Backend Setup**
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # venv\Scripts\activate on Windows
+   pip install -r requirements.txt
+   # Setup your .env file
+   python main.py
+   ```
 
-### Backend (Render/Railway)
-1. Use the provided `backend/Dockerfile`.
-2. Connect your GitHub and set root directory to `backend/`.
-3. Add Environment Variables in the dashboard.
+3. **Frontend Setup**
+   ```bash
+   # In a new terminal (root directory)
+   npm install
+   npm run dev
+   ```
 
-### Frontend (Vercel)
-1. Build Command: `npm run build`
-2. Output Directory: `dist`
-3. Add `VITE_BACKEND_URL` pointing to your deployed API.
+## 📜 Disclaimer
+SaralAI provides simplified guidance based on AI models. Users should always verify information on official government portals before making decisions.
 
 ---
-*Built with ❤️ for Indian Citizens by Siddharth Sadhu*
+Built with ❤️ for India.
