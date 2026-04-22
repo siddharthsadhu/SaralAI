@@ -4,30 +4,33 @@
 
 /* CSS Custom Properties (Design Tokens) */
 :root {
-  /* Colors - Government Trust Palette */
-  --color-primary: #2563EB;
-  --color-primary-light: #3B82F6;
-  --color-primary-dark: #1D4ED8;
-  --color-primary-bg: rgba(37, 99, 235, 0.08);
-  --color-primary-ring: rgba(37, 99, 235, 0.2);
+  /* Colors - SaralAI Purple/Lavender Palette */
+  --color-primary: #7C3AED;
+  --color-primary-light: #9F67F5;
+  --color-primary-dark: #5B21B6;
+  --color-primary-bg: rgba(124, 58, 237, 0.08);
+  --color-primary-ring: rgba(124, 58, 237, 0.25);
 
-  --color-bg: #F7F8FA;
-  --color-bg-card: #FFFFFF;
-  --color-bg-elevated: #FFFFFF;
+  --color-bg: #F5EEFF;
+  --color-bg-card: rgba(255, 255, 255, 0.85);
+  --color-bg-elevated: rgba(255, 255, 255, 0.95);
 
-  --color-text-primary: #1A1A2E;
-  --color-text-secondary: #64748B;
-  --color-text-muted: #94A3B8;
+  --color-text-primary: #3B0764;
+  --color-text-secondary: #6D28D9;
+  --color-text-muted: #A78BDA;
   --color-text-inverse: #FFFFFF;
 
-  --color-border: #E2E8F0;
-  --color-border-light: #F1F5F9;
+  --color-border: #DDD6FE;
+  --color-border-light: #EDE9FE;
   --color-border-focus: var(--color-primary);
+
+  --color-accent-pink: #EC4899;
+  --color-accent-cyan: #06B6D4;
 
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-error: #EF4444;
-  --color-info: #0EA5E9;
+  --color-info: #06B6D4;
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -110,6 +113,10 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text-primary);
   background-color: var(--color-bg);
+  background-image:
+    linear-gradient(rgba(167, 139, 250, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167, 139, 250, 0.18) 1px, transparent 1px);
+  background-size: 40px 40px;
   min-height: 100vh;
 }
 
@@ -544,7 +551,7 @@ body {
 /* High contrast mode */
 @media (prefers-contrast: high) {
   :root {
-    --color-primary: #0047AB;
+    --color-primary: #4C1D95;
     --color-border: #333;
     --color-text-secondary: #444;
   }

@@ -137,7 +137,7 @@ export const micButtonStyles = `
   color: var(--color-text-inverse);
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
 }
 
 .mic-btn-container.mic-btn-md .mic-btn {
@@ -167,7 +167,7 @@ export const micButtonStyles = `
 
 .mic-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 30px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 6px 30px rgba(124, 58, 237, 0.4);
 }
 
 .mic-btn:active {
@@ -180,10 +180,10 @@ export const micButtonStyles = `
 
 @keyframes mic-listening {
   0%, 100% {
-    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
   }
   50% {
-    box-shadow: 0 6px 40px rgba(37, 99, 235, 0.5);
+    box-shadow: 0 6px 40px rgba(124, 58, 237, 0.5);
   }
 }
 

@@ -5,9 +5,13 @@ import { Header, initHeader } from '../components/Header.js';
 import { MicButton } from '../components/MicButton.js';
 import { Button } from '../components/Button.js';
 import { navigate } from '../router.js';
-import { setState } from '../state.js';
+import { setState, getState } from '../state.js';
+import { getLocalLabel } from '../utils/labels.js';
 
 export function ListeningScreen() {
+  const { detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
+
   return `
     <div class="screen listening-screen">
       ${Header({})}
@@ -18,8 +22,8 @@ export function ListeningScreen() {
             ${MicButton({ size: 'lg', isListening: true, id: 'listening-mic-btn' })}
           </div>
           
-          <h1 class="listening-title">Sun raha hoon…</h1>
-          <p class="listening-subtitle" id="listening-status">Listening…</p>
+          <h1 class="listening-title">${getLocalLabel('listening', langCode).replace('…', '')}</h1>
+          <p class="listening-subtitle" id="listening-status">${getLocalLabel('listening', langCode)}</p>
 
           <div class="listening-transcript" id="listening-transcript" style="display:none">
             <div class="listening-transcript-text" id="listening-transcript-text"></div>
@@ -27,7 +31,7 @@ export function ListeningScreen() {
           
           <div class="listening-action">
             ${Button({
-    text: 'Stop',
+    text: getLocalLabel('stop', langCode),
     icon: 'stop',
     variant: 'ghost',
     size: 'lg',
@@ -38,7 +42,7 @@ export function ListeningScreen() {
       </div>
       
       <footer class="listening-footer">
-        <p class="listening-footer-text">Speak clearly in your preferred language</p>
+        <p class="listening-footer-text">${getLocalLabel('speak_clearly', langCode)}</p>
       </footer>
     </div>
   `;
@@ -47,82 +51,133 @@ export function ListeningScreen() {
 export function initListeningScreen() {
   initHeader();
 
-  const stopBtn = document.getElementById('stop-btn');
-  const statusEl = document.getElementById('listening-status');
-  const transcriptBox = document.getElementById('listening-transcript');
+  const stopBtn      = document.getElementById('stop-btn');
+  const statusEl     = document.getElementById('listening-status');
+  const transcriptBox  = document.getElementById('listening-transcript');
   const transcriptText = document.getElementById('listening-transcript-text');
 
-  // Get recognition instance started by SpeakScreen
-  const recognition = window._saralaiRecognition;
-  let stopped = false;
+  const recognition   = window._saralaiRecognition;    // Web Speech API (client-side mode)
+  const wavRecorder   = window._saralaiWavRecorder;    // WavRecorder (backend mode)
+  let isNavigating = false;
+  let isProcessing = false;
 
-  function goToProcessing(query) {
-    if (stopped) return;
-    stopped = true;
-    setState({ currentQuery: query || '' });
+  function goToProcessing(query, detectedLangCode = null) {
+    if (isNavigating) return;
+    isNavigating = true;
+    setState({
+      currentQuery:        query || '',
+      detectedLanguageCode: detectedLangCode,   // BCP-47 from Saaras, null in client-side mode
+    });
     navigate('processing');
   }
 
-  if (recognition) {
+  // ── Backend mode: WavRecorder + Saaras v3 ────────────────────────────────
+  if (wavRecorder) {
+    // Stop recording after 10 seconds max (auto-stop)
+    const autoStopTimer = setTimeout(async () => {
+      if (!isNavigating && !isProcessing) {
+        await handleStop(autoStopTimer);
+      }
+    }, 10000);
+
+    const handleStop = async (timer) => {
+      if (isNavigating || isProcessing) return;
+      isProcessing = true;
+      clearTimeout(timer);
+
+      if (statusEl) statusEl.textContent = 'Sending to Sarvam AI…';
+      
+      const audioBlob = await wavRecorder.stop();
+      window._saralaiWavRecorder = null;
+
+      if (!audioBlob || audioBlob.size === 0) {
+        if (statusEl) statusEl.textContent = 'Could not hear clearly. Please try again.';
+        setTimeout(() => { if (!isNavigating) { isNavigating = true; navigate('speak'); } }, 2000);
+        return;
+      }
+
+      try {
+        const { transcript, languageCode } = await import('../ai.js').then(m =>
+          m.transcribeAudio(audioBlob)
+        );
+
+        if (!transcript) {
+          if (statusEl) statusEl.textContent = 'Could not hear clearly. Please try again.';
+          setTimeout(() => { if (!isNavigating) { isNavigating = true; navigate('speak'); } }, 2000);
+          return;
+        }
+
+        if (statusEl) statusEl.textContent = 'Got it!';
+        if (transcriptText) transcriptText.textContent = `"${transcript}"`;
+        if (transcriptBox) transcriptBox.style.display = 'block';
+
+        setTimeout(() => goToProcessing(transcript, languageCode), 700);
+
+      } catch (err) {
+        console.error('[Saaras] Transcription failed:', err);
+        if (statusEl) statusEl.textContent = 'Could not process audio. Please try again.';
+        setTimeout(() => { if (!isNavigating) { isNavigating = true; navigate('speak'); } }, 2000);
+      }
+    }; // end handleStop
+
+    if (stopBtn) {
+      stopBtn.addEventListener('click', async () => {
+        if (!isNavigating && !isProcessing) {
+          await handleStop(autoStopTimer);
+        }
+      });
+    }
+
+  // ── Client-side mode: Web Speech API ──────────────────────────────────────
+  } else if (recognition) {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       if (statusEl) statusEl.textContent = 'Got it!';
       if (transcriptText) transcriptText.textContent = `"${transcript}"`;
       if (transcriptBox) transcriptBox.style.display = 'block';
-
-      // Brief pause to show transcript, then proceed
-      setTimeout(() => goToProcessing(transcript), 700);
+      setTimeout(() => goToProcessing(transcript, null), 700);
     };
 
     recognition.onerror = (event) => {
       console.warn('Speech recognition error:', event.error);
       if (statusEl) statusEl.textContent = 'Could not hear clearly. Please try again.';
-      // Auto-navigate back to speak screen after error
       setTimeout(() => {
-        if (!stopped) {
-          stopped = true;
-          navigate('speak');
-        }
+        if (!isNavigating) { isNavigating = true; navigate('speak'); }
       }, 2000);
     };
 
     recognition.onend = () => {
-      if (!stopped) {
-        // Recognition ended without result — navigate to type screen
+      if (!isNavigating) {
         setTimeout(() => {
-          if (!stopped) {
-            stopped = true;
-            navigate('type');
-          }
+          if (!isNavigating) { isNavigating = true; navigate('type'); }
         }, 500);
       }
     };
+
+    if (stopBtn) {
+      stopBtn.addEventListener('click', () => {
+        isNavigating = true;
+        try { recognition.stop(); } catch (e) { /* ignore */ }
+        window._saralaiRecognition = null;
+        navigate('speak');
+      });
+    }
+
   } else {
-    // No recognition — demo mode: auto-transition after 3s
-    if (statusEl) statusEl.textContent = 'Demo mode — voice not started from Speak screen';
+    // No recognition active — demo / fallback
+    if (statusEl) statusEl.textContent = 'No active recording. Return to Speak screen.';
     setTimeout(() => {
-      if (!stopped && window.location.hash === '#listening') {
-        stopped = true;
+      if (!isNavigating && window.location.hash === '#listening') {
+        isNavigating = true;
         navigate('speak');
       }
-    }, 3000);
-  }
-
-  if (stopBtn) {
-    stopBtn.addEventListener('click', () => {
-      stopped = true;
-      if (recognition) {
-        try { recognition.stop(); } catch (e) { /* ignore */ }
-      }
-      window._saralaiRecognition = null;
-      navigate('speak');
-    });
+    }, 2500);
   }
 }
 
 export const listeningStyles = `
 .listening-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .listening-content {

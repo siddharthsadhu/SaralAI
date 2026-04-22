@@ -25,6 +25,30 @@ export function Header(options = {}) {
      } = options;
 
      const lang = getSelectedLanguage();
+     
+     let userProfileHtml = '';
+     try {
+       const userStr = localStorage.getItem('saralai_user');
+       if (userStr) {
+         const user = JSON.parse(userStr);
+         const avatar = user.picture ? `<img src="${user.picture}" alt="Profile" class="header-avatar-img">` : getIcon('user', 'icon icon-sm');
+         userProfileHtml = `
+           <div class="header-profile">
+             <button class="header-profile-btn" id="header-profile-btn">
+               ${avatar}
+               <span class="header-profile-name">${user.name || user.email}</span>
+             </button>
+             <div class="header-profile-dropdown" id="header-profile-dropdown" style="display: none;">
+                <div class="header-profile-email">${user.email}</div>
+                <button class="header-logout-btn" id="header-logout-btn">
+                  Logout
+                </button>
+             </div>
+           </div>
+         `;
+       }
+     } catch(e) {}
+
 
      const logoHtml = showBack ? `
     <button class="header-back" id="header-back-btn">
@@ -41,30 +65,19 @@ export function Header(options = {}) {
      const navHtml = showNav ? `
     <nav class="header-nav">
       <a href="#speak" class="header-nav-link">Home</a>
-      <a href="#explanation" class="header-nav-link">Services</a>
-      <a href="#language" class="header-nav-link">Language</a>
-      <a href="#speak" class="header-nav-link">Help</a>
+      <a href="#services" class="header-nav-link">Services</a>
+      <a href="#help" class="header-nav-link">Help</a>
     </nav>
   ` : '';
 
-     const languageToggleHtml = showLanguageToggle ? `
-    <button class="header-lang-toggle" id="lang-toggle-btn">
-      ${getIcon('translate', 'icon icon-sm')}
-      <span>${lang.english} / English</span>
-    </button>
-  ` : '';
+     // Language toggle has been removed as the app now automatically detects language via Voice (Saaras) or provides an inline dropdown for Typing.
+     const languageToggleHtml = '';
 
      const voiceAssistHtml = showVoiceAssist ? `
     <button class="header-voice-btn" id="voice-assist-btn">
       ${getIcon('mic', 'icon icon-sm')}
       <span>Voice Assist</span>
     </button>
-  ` : '';
-
-     const userHtml = showNav ? `
-    <div class="header-user">
-      <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user" alt="User" class="header-avatar" />
-    </div>
   ` : '';
 
      return `
@@ -75,7 +88,7 @@ export function Header(options = {}) {
           ${navHtml}
           ${languageToggleHtml}
           ${voiceAssistHtml}
-          ${userHtml}
+          ${userProfileHtml}
         </div>
       </div>
     </header>
@@ -93,18 +106,36 @@ export function initHeader() {
           });
      }
 
-     const langToggle = document.getElementById('lang-toggle-btn');
-     if (langToggle) {
-          langToggle.addEventListener('click', () => {
-               navigate('language');
-          });
-     }
+     // langToggle removed for automatic language handling
 
      const voiceAssist = document.getElementById('voice-assist-btn');
      if (voiceAssist) {
           voiceAssist.addEventListener('click', () => {
                navigate('speak');
           });
+     }
+
+     const profileBtn = document.getElementById('header-profile-btn');
+     const profileDropdown = document.getElementById('header-profile-dropdown');
+     if (profileBtn && profileDropdown) {
+         profileBtn.addEventListener('click', (e) => {
+             e.stopPropagation();
+             const isHidden = profileDropdown.style.display === 'none';
+             profileDropdown.style.display = isHidden ? 'flex' : 'none';
+         });
+
+         document.addEventListener('click', () => {
+             profileDropdown.style.display = 'none';
+         });
+     }
+
+     const logoutBtn = document.getElementById('header-logout-btn');
+     if (logoutBtn) {
+         logoutBtn.addEventListener('click', () => {
+             localStorage.removeItem('saralai_token');
+             localStorage.removeItem('saralai_user');
+             navigate('auth');
+         });
      }
 }
 
@@ -210,27 +241,91 @@ export const headerStyles = `
   color: var(--color-primary);
 }
 
-.header-user {
-  display: flex;
-  align-items: center;
-}
-
-.header-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background-color: var(--color-bg);
-  border: 2px solid var(--color-border);
-}
-
 @media (max-width: 768px) {
   .header-nav {
     display: none;
   }
   
   .header-lang-toggle span,
-  .header-voice-btn span {
+  .header-voice-btn span,
+  .header-profile-name {
     display: none;
   }
+}
+
+.header-profile {
+  position: relative;
+}
+
+.header-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.header-profile-btn:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg);
+}
+
+.header-avatar-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header-profile-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-2);
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-2);
+}
+
+.header-profile-email {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--space-1);
+}
+
+.header-logout-btn {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-error, #ef4444);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.header-logout-btn:hover {
+  background: var(--color-bg);
 }
 `;

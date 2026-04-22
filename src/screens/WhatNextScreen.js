@@ -7,12 +7,14 @@ import { MicButtonSmall } from '../components/MicButton.js';
 import { getIcon } from '../icons.js';
 import { navigate } from '../router.js';
 import { getState, setState } from '../state.js';
+import { getLocalLabel } from '../utils/labels.js';
 
 export function WhatNextScreen() {
-  const { currentScheme, currentExplanation } = getState();
+  const { currentScheme, currentExplanation, detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
 
-  const schemeName = currentExplanation?.schemeName || currentScheme?.scheme_name || 'the scheme';
-  const summary = currentScheme?.who_is_it_for?.short || currentExplanation?.summary || '';
+  const schemeName = currentExplanation?.schemeName || currentScheme?.scheme_name || '';
+  const summary = currentExplanation?.summary || currentScheme?.who_is_it_for?.short || '';
   const category = currentScheme?.category || '';
   const officialSource = currentExplanation?.officialSource || currentScheme?.source_information?.official_website || '';
 
@@ -28,7 +30,7 @@ export function WhatNextScreen() {
               ${getIcon('government', 'icon')}
             </div>
             <div class="whatnext-summary-body">
-              <p class="whatnext-summary-label">You asked about</p>
+              <p class="whatnext-summary-label">${getLocalLabel('you_asked_about', langCode)}</p>
               <p class="whatnext-summary-scheme">${schemeName}</p>
               ${summary ? `<p class="whatnext-summary-desc">${summary}</p>` : ''}
               ${category ? `<span class="whatnext-category-badge">${category}</span>` : ''}
@@ -36,29 +38,29 @@ export function WhatNextScreen() {
           </div>
           
           <div class="whatnext-question animate-slideUp">
-            <h2 class="whatnext-title">What would you like to do next?</h2>
+            <h2 class="whatnext-title">${getLocalLabel('what_would_you_like', langCode)}</h2>
             
             <div class="whatnext-options">
               ${Button({
-    text: 'Explain again',
+    text: getLocalLabel('explain_again', langCode),
     variant: 'secondary',
     fullWidth: true,
     id: 'explain-btn'
   })}
               ${Button({
-    text: 'Documents needed',
+    text: getLocalLabel('documents_needed', langCode),
     variant: 'secondary',
     fullWidth: true,
     id: 'documents-btn'
   })}
               ${Button({
-    text: 'Step-by-step guide',
+    text: getLocalLabel('step_by_step', langCode),
     variant: 'secondary',
     fullWidth: true,
     id: 'steps-btn'
   })}
               ${Button({
-    text: 'Ask another question',
+    text: getLocalLabel('ask_another', langCode),
     icon: 'mic',
     variant: 'primary',
     fullWidth: true,
@@ -70,16 +72,16 @@ export function WhatNextScreen() {
           ${officialSource ? `
             <a href="${officialSource}" target="_blank" rel="noopener noreferrer" class="whatnext-official-link animate-slideUp">
               ${getIcon('arrowRight', 'icon icon-sm')}
-              Visit official portal
+              ${getLocalLabel('visit_official_portal', langCode)}
             </a>
           ` : ''}
 
           <div class="whatnext-disclaimer animate-slideUp">
-            <p>Remember: This information is for guidance only. For official decisions, always visit the government portal.</p>
+            <p>${getLocalLabel('remember_guidance', langCode)}</p>
           </div>
           
           <div class="whatnext-mic animate-slideUp">
-            ${MicButtonSmall({ id: 'whatnext-mic-btn', text: 'Tap to speak' })}
+            ${MicButtonSmall({ id: 'whatnext-mic-btn', text: getLocalLabel('tap_to_speak', langCode) })}
           </div>
         </div>
       </div>
@@ -109,7 +111,7 @@ export function initWhatNextScreen() {
 // What next screen styles
 export const whatNextStyles = `
 .whatnext-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .whatnext-summary {

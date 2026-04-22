@@ -1,0 +1,35 @@
+# Environment & Secrets
+.env
+*.json.key
+google-credentials.json
+*-credentials.json
+*-serviceaccount.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Database
+*.db
+*.sqlite
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Build artifacts
+dist/
+alembic/versions/*.pyc

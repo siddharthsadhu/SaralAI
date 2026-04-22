@@ -55,7 +55,12 @@ export function initLandingScreen() {
   const startBtn = document.getElementById('start-btn');
   if (startBtn) {
     startBtn.addEventListener('click', () => {
-      navigate('language');
+      const token = localStorage.getItem('saralai_token');
+      if (token) {
+        navigate('interactionmode');
+      } else {
+        navigate('auth');
+      }
     });
   }
 }
@@ -63,7 +68,7 @@ export function initLandingScreen() {
 // Landing screen styles
 export const landingStyles = `
 .landing-screen {
-  background: linear-gradient(180deg, var(--color-bg) 0%, #F0F4FF 100%);
+  background: transparent;
 }
 
 .landing-content {
@@ -137,7 +142,7 @@ export const landingStyles = `
   justify-content: center;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border-radius: var(--radius-full);
-  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.35);
 }
 
 .landing-icon-svg {

@@ -6,13 +6,17 @@ import { Header, initHeader } from '../components/Header.js';
 import { Button } from '../components/Button.js';
 import { getIcon } from '../icons.js';
 import { navigate } from '../router.js';
-import { setState } from '../state.js';
+import { getState, setState } from '../state.js';
+import { getLocalLabel } from '../utils/labels.js';
 
 /**
  * Render type screen
  * @returns {string} Screen HTML
  */
 export function TypeScreen() {
+     const { detectedLanguageCode, selectedLanguage } = getState();
+     const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
+
      return `
     <div class="screen type-screen">
       ${Header({ showLanguageToggle: true })}
@@ -20,16 +24,26 @@ export function TypeScreen() {
       <div class="screen-content">
         <div class="container">
           <div class="type-header animate-fadeIn">
-            <h1 class="heading-2">Type your question</h1>
-            <p class="text-body">Write in any language you're comfortable with.</p>
+            <h1 class="heading-2">${getLocalLabel('type_your_question', langCode)}</h1>
           </div>
           
           <div class="type-input-wrapper animate-slideUp">
             <div class="type-input-container">
+              <div class="type-language-selector">
+                <select id="language-dropdown" class="type-lang-select">
+                  <option value="en-IN">English</option>
+                  <option value="hi-IN" selected>हिंदी (Hindi)</option>
+                  <option value="bn-IN">বাংলা (Bengali)</option>
+                  <option value="te-IN">తెలుగు (Telugu)</option>
+                  <option value="mr-IN">मराठी (Marathi)</option>
+                  <option value="ta-IN">தமிழ் (Tamil)</option>
+                  <option value="gu-IN">ગુજરાતી (Gujarati)</option>
+                  <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+                </select>
+              </div>
               <textarea 
                 class="type-input" 
                 id="question-input" 
-                placeholder="E.g., How can I apply for a ration card?"
                 rows="4"
               ></textarea>
               <div class="type-input-footer">
@@ -38,7 +52,7 @@ export function TypeScreen() {
             </div>
             
             <div class="type-examples">
-              <p class="type-examples-title">Try asking about:</p>
+              <p class="type-examples-title">${getLocalLabel('or_try_these', langCode)}</p>
               <div class="type-example-chips">
                 <button class="type-chip" data-query="How to apply for Aadhaar card?">
                   Aadhaar Card
@@ -58,7 +72,7 @@ export function TypeScreen() {
           
           <div class="type-actions">
             ${Button({
-          text: 'Ask',
+          text: getLocalLabel('ask', langCode),
           icon: 'arrowRight',
           iconPosition: 'right',
           variant: 'primary',
@@ -69,14 +83,14 @@ export function TypeScreen() {
             
             <button class="type-voice-switch" id="voice-switch-btn">
               ${getIcon('mic', 'icon icon-sm')}
-              <span>Prefer to speak instead?</span>
+              <span>${getLocalLabel('speak_in_your_language', langCode)}</span>
             </button>
           </div>
         </div>
       </div>
       
       <footer class="type-footer">
-        <p class="type-footer-text">Protected by Government Secure Services</p>
+        <p class="type-footer-text">${getLocalLabel('powered_by', langCode)}</p>
       </footer>
     </div>
   `;
@@ -104,6 +118,13 @@ export function initTypeScreen() {
                }
           });
 
+          const { typeScreenPrefill } = getState();
+          if (typeScreenPrefill) {
+               input.value = typeScreenPrefill;
+               input.dispatchEvent(new Event('input'));
+               setState({ typeScreenPrefill: null });
+          }
+
           // Focus input on load
           setTimeout(() => input.focus(), 300);
      }
@@ -112,7 +133,12 @@ export function initTypeScreen() {
           askBtn.addEventListener('click', () => {
                const query = input?.value?.trim();
                if (query) {
-                    setState({ currentQuery: query });
+                    const langSelect = document.getElementById('language-dropdown');
+                    const lang = langSelect ? langSelect.value : 'hi-IN';
+                    setState({ 
+                         currentQuery: query,
+                         detectedLanguageCode: lang 
+                    });
                     navigate('processing');
                } else {
                     // Show toast if empty
@@ -145,7 +171,7 @@ export function initTypeScreen() {
 // Type screen styles
 export const typeStyles = `
 .type-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .type-header {
@@ -175,7 +201,7 @@ export const typeStyles = `
 
 .type-input {
   width: 100%;
-  padding: var(--space-5);
+  padding: var(--space-4) var(--space-5);
   border: none;
   background: transparent;
   font-family: var(--font-family);
@@ -193,11 +219,33 @@ export const typeStyles = `
   outline: none;
 }
 
+.type-language-selector {
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border-light);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.type-lang-select {
+  border: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  cursor: pointer;
+  outline: none;
+}
+
 .type-input-footer {
   display: flex;
   justify-content: flex-end;
   padding: var(--space-2) var(--space-4);
-  background-color: var(--color-bg);
+  background-color: transparent;
   border-top: 1px solid var(--color-border-light);
 }
 

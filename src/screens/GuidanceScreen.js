@@ -8,27 +8,30 @@ import { ProgressIndicator } from '../components/ProgressIndicator.js';
 import { navigate } from '../router.js';
 import { getState, setState } from '../state.js';
 import { getIcon } from '../icons.js';
+import { getLocalLabel } from '../utils/labels.js';
 
 /**
  * Render guidance screen
  * @returns {string} Screen HTML
  */
 export function GuidanceScreen() {
-  const { currentScheme, currentExplanation, currentStep, totalSteps } = getState();
+  const { currentScheme, currentExplanation, currentStep, detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
 
-  const schemeName = currentExplanation?.schemeName || currentScheme?.scheme_name || 'this scheme';
+  const schemeName = currentExplanation?.schemeName || currentScheme?.scheme_name || '';
+  const expSteps = (currentExplanation?.steps || []).filter(Boolean);
   const rawSteps = currentScheme?.application_process?.steps || [];
-  const appMode = currentScheme?.application_process?.mode || '';
+  const appMode = currentExplanation?.applicationMode || currentScheme?.application_process?.mode || '';
   const officialSource = currentExplanation?.officialSource || currentScheme?.source_information?.official_website || '';
 
-  // Use real steps or fallback
-  const steps = rawSteps.length > 0 ? rawSteps : [
+  // Prefer backend-translated steps from the last explanation; else JSON (English).
+  const steps = expSteps.length > 0 ? expSteps : (rawSteps.length > 0 ? rawSteps : [
     'Gather your required documents (Aadhaar, income proof, etc.)',
     'Visit the relevant local office or official portal',
     'Submit your application with all required documents',
     'Track your application status via the official portal',
     'Contact helpline if there is any delay or issue'
-  ];
+  ]);
 
   const totalStepsCount = steps.length;
   const activeStep = Math.min(currentStep || 1, totalStepsCount);
@@ -41,14 +44,14 @@ export function GuidanceScreen() {
         <div class="container">
 
           <div class="guidance-header animate-fadeIn">
-            <h1 class="heading-2">What to Do Next</h1>
-            <p class="text-body">Step-by-step guide for <strong>${schemeName}</strong></p>
+            <h1 class="heading-2">${getLocalLabel('what_to_do_next', langCode)}</h1>
+            <p class="text-body">${getLocalLabel('step_by_step_guide', langCode)} <strong>${schemeName}</strong></p>
           </div>
 
           ${appMode ? `
             <div class="guidance-mode-badge animate-fadeIn">
               ${getIcon('arrowRight', 'icon icon-sm')}
-              <span>How to apply: <strong>${appMode}</strong></span>
+              <span>${getLocalLabel('how_to_apply', langCode)}: <strong>${appMode}</strong></span>
             </div>
           ` : ''}
 
@@ -56,7 +59,7 @@ export function GuidanceScreen() {
             ${ProgressIndicator({
     current: activeStep,
     total: totalStepsCount,
-    label: `Step ${activeStep} of ${totalStepsCount}`
+    label: `${getLocalLabel('current_step', langCode)} · ${activeStep} / ${totalStepsCount}`
   })}
           </div>
 
@@ -77,7 +80,7 @@ export function GuidanceScreen() {
                   </div>
                   <div class="guidance-step-content">
                     <p class="guidance-step-text">${step}</p>
-                    ${isActive ? '<span class="guidance-step-current-badge">Current Step</span>' : ''}
+                    ${isActive ? `<span class="guidance-step-current-badge">${getLocalLabel('current_step', langCode)}</span>` : ''}
                   </div>
                 </div>
               `;
@@ -88,40 +91,40 @@ export function GuidanceScreen() {
             <div class="guidance-portal-card animate-slideUp">
               ${getIcon('government', 'icon icon-sm')}
               <div>
-                <p class="guidance-portal-label">Official Portal</p>
+                <p class="guidance-portal-label">${getLocalLabel('official_portal', langCode)}</p>
                 <a href="${officialSource}" target="_blank" rel="noopener noreferrer" class="guidance-portal-link">${officialSource}</a>
               </div>
             </div>
           ` : ''}
 
           <div class="guidance-disclaimer animate-slideUp">
-            <p>This is for guidance only. For official decisions, always visit the government portal or your local office.</p>
+            <p>${getLocalLabel('disclaimer', langCode)}</p>
           </div>
 
           <div class="guidance-actions">
             ${activeStep < totalStepsCount ? Button({
-    text: 'Mark Step Done →',
+    text: getLocalLabel('mark_step_done', langCode),
     variant: 'primary',
     size: 'lg',
     fullWidth: true,
     id: 'next-step-btn'
   }) : Button({
-    text: '✓ All steps noted!',
+    text: getLocalLabel('all_steps_noted', langCode),
     variant: 'primary',
     size: 'lg',
     fullWidth: true,
     id: 'done-btn'
   })}
             ${Button({
-    text: 'Ask Another Question',
+    text: getLocalLabel('ask_another', langCode),
     icon: 'mic',
     variant: 'ghost',
     fullWidth: true,
     id: 'ask-another-btn'
   })}
             ${Button({
-    text: 'Go to Home',
-    variant: 'ghost',
+    text: getLocalLabel('go_home', langCode),
+    variant: 'secondary',
     fullWidth: true,
     id: 'home-btn'
   })}
@@ -140,12 +143,17 @@ export function initGuidanceScreen() {
   initHeader();
 
   document.getElementById('next-step-btn')?.addEventListener('click', () => {
-    const { currentStep, currentScheme } = getState();
-    const totalSteps = currentScheme?.application_process?.steps?.length || 5;
+    const { currentStep, currentScheme, currentExplanation } = getState();
+    const expLen = (currentExplanation?.steps || []).filter(Boolean).length;
+    const rawLen = currentScheme?.application_process?.steps?.length || 0;
+    const totalSteps = expLen > 0 ? expLen : (rawLen > 0 ? rawLen : 5);
     if (currentStep < totalSteps) {
       setState({ currentStep: currentStep + 1 });
-      // Re-render to show next step
-      import('../router.js').then(({ navigate }) => navigate('guidance'));
+      // Re-render immediately without relying on hash router cache
+      const app = document.querySelector('#app');
+      app.innerHTML = GuidanceScreen();
+      initGuidanceScreen();
+      window.scrollTo(0, 0);
     }
   });
 
@@ -163,7 +171,7 @@ export function initGuidanceScreen() {
 // Guidance screen styles
 export const guidanceStyles = `
 .guidance-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .guidance-header {

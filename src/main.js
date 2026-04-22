@@ -22,6 +22,9 @@ import { GuidanceScreen, initGuidanceScreen, guidanceStyles } from './screens/Gu
 import { DocumentsScreen, initDocumentsScreen, documentsStyles } from './screens/DocumentsScreen.js';
 import { ClarificationScreen, initClarificationScreen, clarificationStyles } from './screens/ClarificationScreen.js';
 import { WhatNextScreen, initWhatNextScreen, whatNextStyles } from './screens/WhatNextScreen.js';
+import { ServicesScreen, initServicesScreen, servicesStyles } from './screens/ServicesScreen.js';
+import { HelpScreen, initHelpScreen, helpStyles } from './screens/HelpScreen.js';
+import { AuthScreen, initAuthScreen, authStyles } from './screens/AuthScreen.js';
 
 // Import component styles
 import { headerStyles } from './components/Header.js';
@@ -46,7 +49,10 @@ const screens = {
   guidance: { render: GuidanceScreen, init: initGuidanceScreen },
   documents: { render: DocumentsScreen, init: initDocumentsScreen },
   clarification: { render: ClarificationScreen, init: initClarificationScreen },
-  whatnext: { render: WhatNextScreen, init: initWhatNextScreen }
+  whatnext: { render: WhatNextScreen, init: initWhatNextScreen },
+  services: { render: ServicesScreen, init: initServicesScreen },
+  help: { render: HelpScreen, init: initHelpScreen },
+  auth: { render: AuthScreen, init: initAuthScreen }
 };
 
 // Get app container
@@ -79,6 +85,9 @@ function injectStyles() {
     documentsStyles,
     clarificationStyles,
     whatNextStyles,
+    servicesStyles,
+    helpStyles,
+    authStyles,
     // Page transition styles
     pageTransitionStyles
   ].filter(Boolean).join('\n');
@@ -125,7 +134,7 @@ const pageTransitionStyles = `
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(247, 248, 250, 0.9);
+  background: rgba(245, 238, 255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,10 +242,10 @@ html {
 
 @keyframes micPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 20px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 20px rgba(124, 58, 237, 0);
   }
 }
 

@@ -3,11 +3,29 @@
  * Renders the full simplified explanation of the matched scheme.
  */
 import { Header, initHeader } from '../components/Header.js';
-import { AudioPlayer } from '../components/AudioPlayer.js';
+import { AudioPlayer, initAudioPlayer } from '../components/AudioPlayer.js';
 import { Button } from '../components/Button.js';
 import { navigate } from '../router.js';
 import { getState } from '../state.js';
 import { getIcon } from '../icons.js';
+import { getLocalLabel } from '../utils/labels.js';
+
+/**
+ * Parse minimal markdown from sarvam-m output.
+ * sarvam-m is a reasoning model that sometimes emits **bold**, *italic*,
+ * and paragraph breaks. We render these properly instead of showing raw symbols.
+ * @param {string} text
+ * @returns {string} HTML-safe string
+ */
+function parseMarkdown(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')   // Escape HTML first
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')   // **bold**
+    .replace(/\*([^*]+?)\*/g, '<em>$1</em>')             // *italic*
+    .replace(/\n\n+/g, '</p><p>')                         // double newline → paragraph
+    .replace(/\n/g, '<br>');                              // single newline → line break
+}
 
 /**
  * Render a bullet point section
@@ -21,7 +39,7 @@ function BulletSection({ title, points, icon = 'check' }) {
         ${title}
       </h3>
       <ul class="explanation-bullets">
-        ${points.map(p => `<li class="explanation-bullet">${p}</li>`).join('')}
+        ${points.filter(Boolean).map(p => `<li class="explanation-bullet">${parseMarkdown(p)}</li>`).join('')}
       </ul>
     </div>
   `;
@@ -30,19 +48,19 @@ function BulletSection({ title, points, icon = 'check' }) {
 /**
  * Render numbered steps section
  */
-function StepsSection({ steps }) {
+function StepsSection({ steps, langCode }) {
   if (!steps || steps.length === 0) return '';
   return `
     <div class="explanation-section">
       <h3 class="explanation-section-title">
         ${getIcon('arrowRight', 'icon icon-sm explanation-section-icon')}
-        How to Apply
+        ${getLocalLabel('how_to_apply', langCode)}
       </h3>
       <ol class="explanation-steps-list">
-        ${steps.map((step, i) => `
+        ${steps.filter(Boolean).map((step, i) => `
           <li class="explanation-step-item">
             <span class="explanation-step-number">${i + 1}</span>
-            <span class="explanation-step-text">${step}</span>
+            <span class="explanation-step-text">${parseMarkdown(step)}</span>
           </li>
         `).join('')}
       </ol>
@@ -55,8 +73,10 @@ function StepsSection({ steps }) {
  * @returns {string} Screen HTML
  */
 export function ExplanationScreen() {
-  const { currentExplanation, currentScheme } = getState();
+  const { currentExplanation, currentScheme, detectedLanguageCode, selectedLanguage } = getState();
   const exp = currentExplanation;
+  // Determine the active language code for UI labels
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
 
   // Fallback if no data (e.g., user lands here directly via URL)
   if (!exp) {
@@ -65,8 +85,8 @@ export function ExplanationScreen() {
         ${Header({ showNav: true })}
         <div class="screen-content screen-center">
           <div class="explanation-empty animate-fadeIn">
-            <p class="text-body">No query found. Please go back and ask a question.</p>
-            ${Button({ text: 'Ask a Question', icon: 'mic', variant: 'primary', id: 'ask-btn' })}
+            <p class="text-body">${getLocalLabel('no_query_found', langCode)}</p>
+            ${Button({ text: getLocalLabel('ask_question', langCode), icon: 'mic', variant: 'primary', id: 'ask-btn' })}
           </div>
         </div>
       </div>
@@ -87,16 +107,16 @@ export function ExplanationScreen() {
 
           <!-- Scheme header -->
           <div class="explanation-header animate-fadeIn">
-            <div class="explanation-category-badge">${exp.category || 'Government Scheme'}</div>
+            <div class="explanation-category-badge">${exp.category || getLocalLabel('government_scheme', langCode)}</div>
             <h1 class="explanation-title">${exp.schemeName}</h1>
-            <p class="explanation-summary">${exp.summary}</p>
+            <div class="explanation-summary"><p>${parseMarkdown(exp.summary)}</p></div>
           </div>
 
           <!-- Audio Player -->
           <div class="explanation-audio animate-slideUp">
             ${AudioPlayer({
-    title: 'Listen to explanation',
-    subtitle: 'Tap to hear this in your language',
+    title: getLocalLabel('listen_to_explanation', langCode),
+    subtitle: getLocalLabel('tap_to_hear', langCode),
     duration: '1:30',
     currentTime: '0:00'
   })}
@@ -106,29 +126,29 @@ export function ExplanationScreen() {
           <div class="explanation-body animate-slideUp">
 
             ${exp.intent === 'ELIGIBILITY' || exp.intent === 'OVERVIEW' ? BulletSection({
-    title: 'Who is this for?',
+    title: getLocalLabel('who_is_it_for', langCode),
     points: exp.eligibilityPoints,
     icon: 'check'
   }) : ''}
 
             ${exp.intent !== 'DOCUMENTS' ? BulletSection({
-    title: 'What are the benefits?',
+    title: getLocalLabel('what_benefits', langCode),
     points: exp.benefitPoints,
     icon: 'government'
   }) : ''}
 
             ${exp.intent === 'DOCUMENTS' ? BulletSection({
-    title: 'Documents you need',
-    points: exp.documents?.map(d => `${d.mandatory ? '✓ Required: ' : 'Optional: '}${d.name}`),
+    title: getLocalLabel('documents_needed', langCode),
+    points: exp.documents?.map(d => `${d.mandatory ? '✓ ' + getLocalLabel('required', langCode) + ': ' : getLocalLabel('optional', langCode) + ': '}${d.name}`),
     icon: 'check'
   }) : ''}
 
-            ${showSteps && exp.steps?.length > 0 ? StepsSection({ steps: exp.steps }) : ''}
+            ${showSteps && exp.steps?.length > 0 ? StepsSection({ steps: exp.steps, langCode }) : ''}
 
             ${exp.applicationMode ? `
               <div class="explanation-mode-badge">
                 ${getIcon('arrowRight', 'icon icon-sm')}
-                <span>Application Mode: <strong>${exp.applicationMode}</strong></span>
+                <span>${getLocalLabel('application_mode', langCode)}: <strong>${exp.applicationMode}</strong></span>
               </div>
             ` : ''}
           </div>
@@ -136,21 +156,21 @@ export function ExplanationScreen() {
           <!-- Disclaimer -->
           <div class="explanation-disclaimer animate-slideUp">
             ${getIcon('government', 'icon icon-sm')}
-            <p>${exp.disclaimer}</p>
-            ${exp.officialSource ? `<a href="${exp.officialSource}" target="_blank" rel="noopener noreferrer" class="explanation-source-link">Visit official portal →</a>` : ''}
+            <p>${getLocalLabel('disclaimer', langCode)}</p>
+            ${exp.officialSource ? `<a href="${exp.officialSource}" target="_blank" rel="noopener noreferrer" class="explanation-source-link">${getLocalLabel('visit_official_portal', langCode)} →</a>` : ''}
           </div>
 
           <!-- Actions -->
           <div class="explanation-actions">
             <div class="explanation-actions-row">
               ${Button({
-    text: 'Back',
+    text: getLocalLabel('back', langCode),
     icon: 'arrowLeft',
     variant: 'ghost',
     id: 'back-btn'
   })}
               ${Button({
-    text: "What's Next?",
+    text: getLocalLabel('whats_next', langCode),
     icon: 'arrowRight',
     iconPosition: 'right',
     variant: 'primary',
@@ -160,18 +180,18 @@ export function ExplanationScreen() {
             <div class="explanation-actions-secondary">
               <div class="explanation-quick-actions">
                 ${Button({
-    text: 'Documents needed',
+    text: getLocalLabel('documents_needed', langCode),
     variant: 'secondary',
     id: 'docs-btn'
   })}
                 ${Button({
-    text: 'Step-by-step guide',
+    text: getLocalLabel('step_by_step', langCode),
     variant: 'secondary',
     id: 'steps-btn'
   })}
               </div>
               ${Button({
-    text: 'Ask Another Question',
+    text: getLocalLabel('ask_another', langCode),
     icon: 'mic',
     variant: 'ghost',
     fullWidth: true,
@@ -192,6 +212,9 @@ export function ExplanationScreen() {
 export function initExplanationScreen() {
   initHeader();
 
+  // Wire the TTS Listen button — calls Bulbul v3 ONLY when user taps it
+  initAudioPlayer('audio-player');
+
   document.getElementById('back-btn')?.addEventListener('click', () => window.history.back());
   document.getElementById('whatnext-btn')?.addEventListener('click', () => navigate('whatnext'));
   document.getElementById('ask-another-btn')?.addEventListener('click', () => navigate('speak'));
@@ -203,7 +226,7 @@ export function initExplanationScreen() {
 // Explanation screen styles
 export const explanationStyles = `
 .explanation-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .explanation-empty {

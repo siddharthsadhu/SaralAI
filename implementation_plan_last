@@ -1,0 +1,140 @@
+# SaralAI: Complete Analysis & Perfection Plan
+
+## 🔍 What I Found (Thinking Like a Real User)
+
+I went through **every single file** in the codebase. Here is the honest picture of what works, what is broken, and what is missing — evaluated as a real Gujarati/Hindi-speaking rural user would experience it.
+
+---
+
+## ✅ What Works Well
+
+| Feature | Status |
+|---|---|
+| End-to-end Sarvam pipeline (STT → LLM → Translate → TTS) | ✅ Wired up correctly |
+| WavRecorder WAV capture for Saaras v3 | ✅ Working |
+| On-demand TTS via Listen button | ✅ Correct (never auto-called) |
+| Backend routing, CORS, rate limiting | ✅ Solid |
+| Client-side fallback mode (no backend) | ✅ Works |
+| Screen transitions & animations | ✅ Premium |
+| Language auto-detection from Saaras | ✅ BCP-47 code passed through correctly |
+| Batch translation short-circuit for English | ✅ Skips correctly |
+| Query pre-translation to English for search | ✅ Done in query.py |
+
+---
+
+## 🔴 Critical Bugs (Found by Code Inspection)
+
+### Bug 1: `Services` nav → routes to `#explanation` (broken)
+- **File:** `src/components/Header.js`
+- **Impact:** User clicks "Services" → goes to a blank Explanation screen with no data → app crashes
+
+### Bug 2: `Help` nav → routes to `#speak` (misleading)
+- **File:** `src/components/Header.js`  
+- **Impact:** User clicks "Help", gets taken to the mic screen. Confusing for any user.
+
+### Bug 3: Profile Avatar (DiceBear) shown — no auth exists
+- **File:** `src/components/Header.js`
+- **Impact:** Makes the app look like it has user accounts. It doesn't. Breaks trust.
+
+### Bug 4: LLM summary may contain `**bold**` markdown
+- **File:** `src/screens/ExplanationScreen.js` line 92
+- **Impact:** User sees literal asterisks: `**Pradhan Mantri**` instead of bold text
+
+### Bug 5: All bullet data is in English even when query is in Hindi/Gujarati
+- **Files:** `backend/routers/query.py`, `ExplanationScreen.js`, `DocumentsScreen.js`, `GuidanceScreen.js`
+- **Root cause:** The backend translates only `summary`. Arrays (`eligibility_points`, `benefit_points`, `steps`, `documents[].name`) are sent as raw English JSON strings from `Schemes.json`.
+- **Impact (real user experience):** A Gujarati farmer gets the AI summary in Gujarati but then sees all the bullet points in English. This is the single biggest UX failure in the app.
+
+### Bug 6: Section headings hardcoded in English
+- **Files:** `ExplanationScreen.js` ("Who is this for?", "What are the benefits?"), `GuidanceScreen.js` ("What to Do Next", "Current Step"), `DocumentsScreen.js` ("Documents you will need", "Required", "Optional")
+- **Impact:** Same as above — partial translation feels broken.
+
+### Bug 7: TypeScreen language code not propagating correctly
+- **File:** `src/screens/TypeScreen.js` line 129-132
+- **Root cause:** TypeScreen sets `detectedLanguageCode` to a BCP-47 string (e.g. "hi-IN"). But `ProcessingScreen.js` line 105 passes it directly to `processQueryBackend()`, which then does `languageCode.split('-')[0]` → ok. BUT the state key `detectedLanguageCode` set from TypeScreen is BCP-47, while from voice it could also be BCP-47. This happens to work but is fragile.
+
+### Bug 8: WhatNextScreen shows English `who_is_it_for.short`
+- **File:** `src/screens/WhatNextScreen.js` line 15
+- **Root cause:** `summary` is the AI-translated text, but the code falls back to `currentScheme?.who_is_it_for?.short` which is always English from JSON.
+
+### Bug 9: DocumentsScreen "Read this to me" uses Web Speech API, not Sarvam TTS
+- **File:** `src/screens/DocumentsScreen.js`
+- **Impact:** Voice output for documents list is browser TTS, not Bulbul v3. Inconsistent experience.
+
+---
+
+## 🟡 UX Issues
+
+| Issue | File | Fix |
+|---|---|---|
+| "Documents needed" button on Explanation re-queries scheme | `ExplanationScreen.js` | Navigate directly with existing state |
+| GuidanceScreen fetches `currentScheme` steps (English JSON) instead of translated steps | `GuidanceScreen.js` | Use stored `apiResult.content.steps` |
+| App title in browser tab is generic | `index.html` | Update meta/title |
+| WavRecorder uses `createScriptProcessor` (deprecated) | `wavRecorder.js` | Note: Works fine but shows browser warning |
+| Confidence threshold 0.05 is very low — schemes show even for garbage queries | `query.py` | Consider raising to 0.10 |
+| `"Samajh raha hoon..."` text on Processing screen is Hindi — not localized | `ProcessingScreen.js` | Should use selected language |
+
+---
+
+## Complete Implementation Plan
+
+### Phase 1: Backend — Translate All Arrays (MOST IMPACTFUL)
+**File:** `backend/routers/query.py`
+
+Add a new helper `_translate_all_arrays()` that joins all arrays with `|||` delimiter, calls Mayura once per batch, and splits back. Called after step 5 if language is not English.
+
+Arrays to translate:
+- `eligibility_points` (strings list)
+- `benefit_points` (strings list)  
+- `steps` (strings list)
+- `documents[].name` (document names)
+
+### Phase 2: Frontend — Markdown Parser in ExplanationScreen
+**File:** `src/screens/ExplanationScreen.js`
+
+Add `parseMarkdown(text)` that converts `**bold**` → `<strong>`, `*italic*` → `<em>`, double newlines → paragraph breaks.
+
+### Phase 3: Frontend — UI Label Localisation
+**File:** `src/utils/labels.js` (new shared utility)
+
+Build a `LABELS` map for all 11 languages covering:
+- Section headings (Who is this for, Benefits, Steps, Documents)
+- Status text (Required, Optional, Current Step)
+- Button labels (Mark Step Done, I have these documents, Ask Another Question)
+
+Used in `ExplanationScreen`, `GuidanceScreen`, `DocumentsScreen`, `WhatNextScreen`.
+
+### Phase 4: Frontend — Fix Navigation (Header.js + Router)
+**Files:** `Header.js`, `router.js`, `main.js`, + 2 new screen files
+
+- Fix `Services` link → real `ServicesScreen` with scheme category cards
+- Fix `Help` link → real `HelpScreen` with feedback form
+- Remove DiceBear avatar entirely
+
+### Phase 5: Frontend — Fix GuidanceScreen & DocumentsScreen data sources
+**Files:** `GuidanceScreen.js`, `DocumentsScreen.js`
+
+- `GuidanceScreen`: Read `state.currentExplanation.steps` (already translated) instead of `currentScheme.application_process.steps` (raw English)
+- `DocumentsScreen`: Read `state.currentExplanation.documents` (already translated names) instead of `currentScheme.required_documents`
+
+### Phase 6: Frontend — Fix WhatNextScreen Summary
+**File:** `WhatNextScreen.js`
+
+Use `currentExplanation.summary` (translated) as the summary text instead of falling back to the English `who_is_it_for.short`.
+
+### Phase 7: Wire DocumentsScreen TTS to Bulbul v3
+**File:** `DocumentsScreen.js`
+
+Replace Web Speech API `speechSynthesis.speak()` with `requestTTS()` from `ai.js`, using detected language code.
+
+---
+
+## Verification Plan
+
+1. **Gujarati full-flow test**: Type a query in Gujarati → verify ALL sections (summary, bullet points, steps, documents, section headings) appear in Gujarati
+2. **English no-double-translation test**: English query → verify sections stay in English
+3. **Navigation test**: Services → ServicesScreen renders. Help → HelpScreen renders. No avatar visible.
+4. **Markdown test**: sarvam-m response with `**bold**` → verify it renders as bold in browser
+5. **Voice flow test**: Speak in Hindi → recording → processing → full explanation in Hindi
+6. **TTS test**: Explanation screen → tap Listen → Bulbul v3 WAV plays
+7. **Documents TTS test**: Documents screen → tap "Read this to me" → Bulbul v3 plays document list

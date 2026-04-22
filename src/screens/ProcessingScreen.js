@@ -1,19 +1,26 @@
 /**
  * Processing Screen — Real Query Execution
  * Runs the user's query through the AI engine and navigates to the result.
+ * Supports two modes:
+ *   Backend mode (VITE_USE_BACKEND=true):  Sarvam AI pipeline via FastAPI
+ *   Client-side mode (default):            Local keyword search via ai.js
  */
 import { Header, initHeader } from '../components/Header.js';
 import { Button } from '../components/Button.js';
 import { getIcon } from '../icons.js';
 import { navigate } from '../router.js';
 import { getState, setState } from '../state.js';
-import { processQuery } from '../ai.js';
+import { processQuery, processQueryBackend, USE_BACKEND } from '../ai.js';
+import { getLocalLabel } from '../utils/labels.js';
 
 /**
  * Render processing screen
  * @returns {string} Screen HTML
  */
 export function ProcessingScreen() {
+  const { detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
+
   return `
     <div class="screen processing-screen">
       ${Header({ showNav: true })}
@@ -31,8 +38,8 @@ export function ProcessingScreen() {
             </div>
           </div>
           
-          <h1 class="processing-title">Samajh raha hoon…</h1>
-          <p class="processing-subtitle" id="processing-status">Finding the best information for you</p>
+          <h1 class="processing-title">${getLocalLabel('finding_info', langCode).split(' ').slice(0, 3).join(' ')}…</h1>
+          <p class="processing-subtitle" id="processing-status">${getLocalLabel('finding_info', langCode)}</p>
           
           <div class="processing-query-badge" id="processing-query-badge" style="display:none">
             <span class="processing-query-text" id="processing-query-text"></span>
@@ -40,7 +47,7 @@ export function ProcessingScreen() {
 
           <div class="processing-action">
             ${Button({
-    text: 'Cancel',
+    text: getLocalLabel('cancel', langCode),
     icon: 'x',
     variant: 'ghost',
     id: 'cancel-btn'
@@ -59,9 +66,9 @@ export function initProcessingScreen() {
   initHeader();
 
   const cancelBtn = document.getElementById('cancel-btn');
-  const statusEl = document.getElementById('processing-status');
+  const statusEl  = document.getElementById('processing-status');
   const queryBadge = document.getElementById('processing-query-badge');
-  const queryText = document.getElementById('processing-query-text');
+  const queryText  = document.getElementById('processing-query-text');
 
   // Show current query
   const { currentQuery } = getState();
@@ -82,14 +89,12 @@ export function initProcessingScreen() {
   // Run query after a short visual delay for UX
   setTimeout(() => {
     if (cancelled) return;
-
     if (statusEl) statusEl.textContent = 'Searching scheme knowledge base…';
 
-    // Simulate slight processing time for natural feel
-    setTimeout(() => {
+    setTimeout(async () => {
       if (cancelled) return;
 
-      const query = getState().currentQuery;
+      const { currentQuery: query, selectedLanguage, detectedLanguageCode } = getState();
 
       if (!query || query.trim().length < 2) {
         navigate('clarification');
@@ -97,37 +102,69 @@ export function initProcessingScreen() {
       }
 
       try {
-        const { result, confidence, topMatches } = processQuery(query);
+        if (USE_BACKEND) {
+          // ── Backend mode: Sarvam AI pipeline (sarvam-m + Mayura) ──────────
+          // Voice flow: use Saaras-detected BCP-47 language code
+          // Text flow:  use manually selected language from LanguageScreen
+          const langCode = detectedLanguageCode || selectedLanguage || 'hi';
 
-        // Save full match list for clarification screen
-        setState({ topMatches });
+          if (statusEl) statusEl.textContent = 'Calling Sarvam AI…';
 
-        if (confidence < 0.05 || !result) {
-          // Can't confidently match — ask for clarification
-          navigate('clarification');
-          return;
+          const { result, confidence, topMatches, apiResponse } =
+            await processQueryBackend(query, langCode, null);
+
+          if (cancelled) return;
+
+          setState({ topMatches });
+
+          if (confidence < 0.05 || !result) {
+            navigate('clarification');
+            return;
+          }
+
+          if (statusEl) statusEl.textContent = 'Translating your answer…';
+
+          setState({
+            currentScheme:        topMatches[0]?.scheme || null,
+            currentIntent:        result.intent,
+            currentExplanation:   result,
+            apiResult:            apiResponse,
+            translatedSummary:    result.summary,
+            detectedLanguageCode: result.languageCode || langCode,
+            ttsAvailable:         true,
+            currentStep:          1,
+            queryHistory:         [...getState().queryHistory, query],
+          });
+
+        } else {
+          // ── Client-side mode: keyword search (no backend needed) ───────────
+          const { result, confidence, topMatches } = processQuery(query);
+
+          if (cancelled) return;
+          setState({ topMatches });
+
+          if (confidence < 0.05 || !result) {
+            navigate('clarification');
+            return;
+          }
+
+          setState({
+            currentScheme:      topMatches[0]?.scheme || null,
+            currentIntent:      result.intent,
+            currentExplanation: result,
+            ttsAvailable:       false,
+            currentStep:        1,
+            queryHistory:       [...getState().queryHistory, query],
+          });
         }
 
-        // Find the top scheme object
-        const topScheme = topMatches[0]?.scheme || null;
-
-        // Save to state for downstream screens
-        setState({
-          currentScheme: topScheme,
-          currentIntent: result.intent,
-          currentExplanation: result,
-          queryHistory: [...getState().queryHistory, query]
-        });
-
         if (statusEl) statusEl.textContent = 'Found it! Preparing explanation…';
-
-        setTimeout(() => {
-          if (!cancelled) navigate('explanation');
-        }, 400);
+        setTimeout(() => { if (!cancelled) navigate('explanation'); }, 400);
 
       } catch (err) {
         console.error('Query processing error:', err);
-        navigate('clarification');
+        if (statusEl) statusEl.textContent = 'Something went wrong. Try again.';
+        setTimeout(() => { if (!cancelled) navigate('clarification'); }, 1500);
       }
     }, 800);
   }, 600);
@@ -136,7 +173,7 @@ export function initProcessingScreen() {
 // Processing screen styles
 export const processingStyles = `
 .processing-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .processing-content {

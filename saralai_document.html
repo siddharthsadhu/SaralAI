@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SaralAI — Complete Project Document</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #2563EB; --blue-dark: #1D4ED8; --blue-bg: #EFF6FF;
+  --green: #10B981; --red: #EF4444; --orange: #F59E0B;
+  --text: #1A1A2E; --text2: #475569; --text3: #94A3B8;
+  --border: #E2E8F0; --bg: #F8FAFC; --white: #FFFFFF;
+  --radius: 10px; --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+body { font-family: 'Inter', sans-serif; font-size: 10.5pt; color: var(--text); background: var(--white); line-height: 1.65; }
+.cover { page-break-after: always; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #3B82F6 100%); color: white; text-align: center; padding: 60px 40px; }
+.cover-logo { width: 90px; height: 90px; background: rgba(255,255,255,0.15); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 32px; font-size: 40px; }
+.cover h1 { font-size: 38pt; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+.cover .subtitle { font-size: 14pt; opacity: 0.85; margin-bottom: 32px; font-weight: 400; }
+.cover .meta { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius); padding: 20px 40px; display: inline-block; font-size: 10pt; line-height: 2; }
+.cover .meta strong { font-weight: 600; }
+.toc-page { page-break-after: always; padding: 48px; }
+.toc-page h2 { font-size: 22pt; color: var(--blue); margin-bottom: 28px; font-weight: 700; border-bottom: 3px solid var(--blue); padding-bottom: 10px; }
+.toc-entry { display: flex; align-items: baseline; padding: 7px 0; border-bottom: 1px dashed var(--border); }
+.toc-entry .toc-num { color: var(--blue); font-weight: 700; font-size: 10pt; width: 30px; flex-shrink: 0; }
+.toc-entry .toc-title { color: var(--text); font-size: 10pt; }
+.toc-entry.sub { padding-left: 30px; }
+.toc-entry.sub .toc-title { color: var(--text2); font-size: 9.5pt; }
+.content { padding: 0 48px; }
+h1 { font-size: 20pt; font-weight: 800; color: var(--text); margin: 32px 0 12px; line-height: 1.2; }
+h2 { font-size: 16pt; font-weight: 700; color: var(--blue); margin: 36px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--blue-bg); }
+h3 { font-size: 13pt; font-weight: 700; color: var(--text); margin: 24px 0 10px; }
+h4 { font-size: 11pt; font-weight: 600; color: var(--text2); margin: 18px 0 8px; }
+p { margin: 8px 0; color: var(--text); }
+hr { border: none; border-top: 2px solid var(--border); margin: 32px 0; }
+blockquote { border-left: 4px solid var(--blue); background: var(--blue-bg); padding: 12px 18px; border-radius: 0 var(--radius) var(--radius) 0; margin: 14px 0; color: var(--text2); font-style: italic; }
+a { color: var(--blue); text-decoration: none; }
+code { font-family: 'JetBrains Mono', monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-size: 8.5pt; color: #be185d; }
+pre { background: #0F172A; border-radius: var(--radius); padding: 18px 20px; margin: 14px 0; overflow: hidden; page-break-inside: avoid; border: 1px solid #1e293b; }
+pre code { background: none; padding: 0; color: #e2e8f0; font-size: 8pt; line-height: 1.7; display: block; white-space: pre-wrap; word-break: break-all; }
+pre code.lang-json { color: #86efac; }
+pre code.lang-sql { color: #fde68a; }
+pre code.lang-css { color: #c4b5fd; }
+pre code.lang-html { color: #fdba74; }
+pre code.lang-js, pre code.lang-javascript { color: #93c5fd; }
+.mermaid { background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 20px 0; text-align: center; box-shadow: var(--shadow); page-break-inside: avoid; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 9.5pt; page-break-inside: avoid; }
+th { background: var(--blue); color: white; padding: 10px 14px; text-align: left; font-weight: 600; font-size: 9pt; }
+td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+tr:hover td { background: var(--blue-bg); }
+tr:nth-child(even) td { background: #F8FAFC; }
+ul, ol { padding-left: 20px; margin: 6px 0; }
+li { margin: 4px 0; color: var(--text); }
+.fileref { color: var(--blue); font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; background: var(--blue-bg); padding: 1px 5px; border-radius: 3px; }
+.spacer { height: 6px; }
+.section-divider { page-break-before: always; }
+@media print {
+  h2 { page-break-before: auto; }
+  .section-divider { page-break-before: always; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'default', themeVariables: { primaryColor: '#2563EB', primaryTextColor: '#1A1A2E', primaryBorderColor: '#93C5FD', lineColor: '#475569', secondaryColor: '#EFF6FF', tertiaryColor: '#F8FAFC' } });</script>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-logo">🏛️</div>
+  <h1>SaralAI</h1>
+  <div class="subtitle">सरल AI · Voice-First Government Services Assistant<br>Complete Technical & Architecture Reference</div>
+  <div class="meta">
+    <strong>Type:</strong> Project Documentation · Full Stack Reference<br>
+    <strong>Version:</strong> MVP Frontend Complete<br>
+    <strong>Updated:</strong> March 2026<br>
+    <strong>Stack:</strong> Vite + Vanilla JS · Node.js / FastAPI (planned)<br>
+    <strong>Status:</strong> Frontend ✅ Complete · Backend ❌ Planned
+  </div>
+</div>
+
+<div class="toc-page">
+  <h2>Table of Contents</h2>
+  <div class="toc-entry"><span class="toc-num">1.</span><span class="toc-title">Project Identity</span></div>
+  <div class="toc-entry"><span class="toc-num">2.</span><span class="toc-title">What Is Done vs Remaining</span></div>
+  <div class="toc-entry"><span class="toc-num">3.</span><span class="toc-title">System Architecture</span></div>
+  <div class="toc-entry sub"><span class="toc-num">3.1</span><span class="toc-title">High-Level Flow</span></div>
+  <div class="toc-entry sub"><span class="toc-num">3.2</span><span class="toc-title">Data Flow (Client-Side)</span></div>
+  <div class="toc-entry sub"><span class="toc-num">3.3</span><span class="toc-title">Navigation Flow Diagram</span></div>
+  <div class="toc-entry"><span class="toc-num">4.</span><span class="toc-title">Frontend — Full Breakdown</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.1</span><span class="toc-title">Project Setup</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.2</span><span class="toc-title">Design System &amp; CSS</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.3</span><span class="toc-title">Routing</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.4</span><span class="toc-title">State Management</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.5</span><span class="toc-title">AI Query Engine</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.6</span><span class="toc-title">Icons Library</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.7</span><span class="toc-title">Components (8 Files)</span></div>
+  <div class="toc-entry sub"><span class="toc-num">4.8</span><span class="toc-title">Screens (12 Files)</span></div>
+  <div class="toc-entry"><span class="toc-num">5.</span><span class="toc-title">Backend — Full Plan</span></div>
+  <div class="toc-entry sub"><span class="toc-num">5.1–5.5</span><span class="toc-title">Stack · APIs · Services · AI · Data Models</span></div>
+  <div class="toc-entry"><span class="toc-num">6.</span><span class="toc-title">Data Layer — Schemes.json</span></div>
+  <div class="toc-entry"><span class="toc-num">7.</span><span class="toc-title">Complete User Flow</span></div>
+  <div class="toc-entry"><span class="toc-num">8.</span><span class="toc-title">Verification Status</span></div>
+</div>
+<div class="content">
+<h1 id="saralai-complete-project-document">SaralAI — Complete Project Document</h1>
+<h3 id="voice-first-government-services-assistant-technical-architecture-reference">Voice-First Government Services Assistant · Technical & Architecture Reference</h3>
+<div class="spacer"></div>
+<blockquote>Last updated: March 2026 · Version: MVP Frontend Complete</blockquote>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="table-of-contents">Table of Contents</h2>
+<div class="spacer"></div>
+<ol><li><a href="#1-project-identity">Project Identity</a></li></ol>
+<ol><li><a href="#2-what-is-done-vs-remaining">What Is Done vs Remaining</a></li></ol>
+<ol><li><a href="#3-system-architecture">System Architecture</a></li></ol>
+<ol><li><a href="#4-frontend--full-breakdown">Frontend — Full Breakdown</a></li></ol>
+<ul style="margin-left:24px"><li><a href="#41-project-setup">Project Setup</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#42-design-system--css">Design System & CSS</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#43-routing--routerjs">Routing</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#44-state-management--statejs">State Management</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#45-ai-query-engine--aijs">AI Query Engine</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#46-icons-library--iconsjs">Icons Library</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#47-components-8-files">Components</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#48-screens-12-files">Screens</a></li></ul>
+<ol><li><a href="#5-backend--full-plan">Backend — Full Plan</a></li></ol>
+<ul style="margin-left:24px"><li><a href="#51-technology-stack">Technology Stack</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#52-api-endpoints">API Endpoints</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#53-services">Services</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#54-ai-integration">AI Integration</a></li></ul>
+<ul style="margin-left:24px"><li><a href="#55-data-models">Data Models</a></li></ul>
+<ol><li><a href="#6-data-layer--schemesjson">Data Layer — Schemes.json</a></li></ol>
+<ol><li><a href="#7-complete-user-flow">Complete User Flow</a></li></ol>
+<ol><li><a href="#8-verification-status">Verification Status</a></li></ol>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="1-project-identity">1. Project Identity</h2>
+<div class="spacer"></div>
+<table>
+<tr><th>Field</th><th>Value</th></tr>
+<tr><td><strong>Name</strong></td><td>SaralAI (सरल AI)</td></tr>
+<tr><td><strong>Meaning</strong></td><td>"Simple AI" in Hindi</td></tr>
+<tr><td><strong>Tagline</strong></td><td>"A simple helper to understand government services"</td></tr>
+<tr><td><strong>Type</strong></td><td>Voice-first AI assistant for government scheme guidance</td></tr>
+<tr><td><strong>Stack</strong></td><td>Vite + Vanilla JS (frontend) · Node.js/FastAPI (backend — planned)</td></tr>
+<tr><td><strong>Run</strong></td><td><code>cd c:\Users\siddh\Desktop\SaralAI && npm run dev</code> → http://localhost:5173</td></tr>
+</table>
+<div class="spacer"></div>
+<h3 id="what-saralai-is-vs-is-not">What SaralAI IS vs IS NOT</h3>
+<div class="spacer"></div>
+<table>
+<tr><th>✅ SaralAI IS</th><th>❌ SaralAI IS NOT</th></tr>
+<tr><td>A voice-first <strong>explainer</strong> of government schemes</td><td>A scheme discovery engine (myScheme does this)</td></tr>
+<tr><td>A <strong>simplifier</strong> of complex government language</td><td>A government portal replacement</td></tr>
+<tr><td>A <strong>step-by-step guide</strong> for applying</td><td>An application submission system</td></tr>
+<tr><td>A <strong>complementary layer</strong> on top of myScheme</td><td>A ChatGPT/Gemini clone</td></tr>
+<tr><td>A <strong>client-side, stateless guidance</strong> tool</td><td>An eligibility decision maker</td></tr>
+</table>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="2-what-is-done-vs-remaining">2. What Is Done vs Remaining</h2>
+<div class="spacer"></div>
+<h3 id="done-frontend-current-session">✅ DONE — Frontend (Current Session)</h3>
+<div class="spacer"></div>
+<table>
+<tr><th>Phase</th><th>What Was Built</th></tr>
+<tr><td><strong>Project Foundation</strong></td><td>Vite app, <span class="fileref">index.html</span>, <span class="fileref">package.json</span>, <span class="fileref">src/styles/index.css</span> design system</td></tr>
+<tr><td><strong>Routing</strong></td><td><span class="fileref">src/router.js</span> — hash-based router for 12 routes</td></tr>
+<tr><td><strong>State Management</strong></td><td><span class="fileref">src/state.js</span> — app-wide state with scheme result storage</td></tr>
+<tr><td><strong>Icons Library</strong></td><td><span class="fileref">src/icons.js</span> — SVG icon kit (mic, check, arrows, gov, etc.)</td></tr>
+<tr><td><strong>Components</strong></td><td>All 8 components: Header, Button, MicButton, LanguageCard, AudioPlayer, ProgressIndicator, ChecklistItem, StepCard</td></tr>
+<tr><td><strong>All 12 Screens</strong></td><td>LandingScreen, LanguageScreen, InteractionModeScreen, SpeakScreen, TypeScreen, ListeningScreen, ProcessingScreen, ExplanationScreen, ClarificationScreen, WhatNextScreen, DocumentsScreen, GuidanceScreen</td></tr>
+<tr><td><strong>AI Engine</strong></td><td><span class="fileref">src/ai.js</span> — keyword-based scheme search + intent detection across all 10 MVP schemes</td></tr>
+<tr><td><strong>Scheme Data</strong></td><td><span class="fileref">src/Schemes.json</span> — all 10 MVP schemes curated with full details</td></tr>
+<tr><td><strong>Data Integration</strong></td><td>ProcessingScreen runs real queries → ExplanationScreen shows real scheme data → DocumentsScreen pulls real documents → GuidanceScreen shows real steps</td></tr>
+<tr><td><strong>Voice Input</strong></td><td>Web Speech API integrated into SpeakScreen + ListeningScreen</td></tr>
+<tr><td><strong>Clarification</strong></td><td>ClarificationScreen shows top 4 matching scheme cards when query is unclear</td></tr>
+<tr><td><strong>WhatNext</strong></td><td>Fully dynamic summary with real scheme name, category, and official portal link</td></tr>
+</table>
+<div class="spacer"></div>
+<h3 id="remaining-backend-deployment">❌ REMAINING — Backend & Deployment</h3>
+<div class="spacer"></div>
+<table>
+<tr><th>Phase</th><th>What Needs Building</th></tr>
+<tr><td><strong>Backend API</strong></td><td>Node.js/FastAPI endpoints for <code>/api/query</code>, <code>/api/scheme</code>, <code>/api/intent</code></td></tr>
+<tr><td><strong>Real STT</strong></td><td>Google Cloud Speech or Azure STT for Indian language accuracy</td></tr>
+<tr><td><strong>Real TTS</strong></td><td>Google TTS or Azure TTS for voice playback of explanations</td></tr>
+<tr><td><strong>LLM Integration</strong></td><td>Gemini/OpenAI API for advanced simplification prompts</td></tr>
+<tr><td><strong>Database</strong></td><td>PostgreSQL for scheme data (currently client-side JSON)</td></tr>
+<tr><td><strong>PWA</strong></td><td>Service worker, offline mode, installable</td></tr>
+<tr><td><strong>Deployment</strong></td><td>Vercel/Railway frontend, Cloud Run backend</td></tr>
+<tr><td><strong>Multi-language UI</strong></td><td>Hindi/regional language text in all screens</td></tr>
+<tr><td><strong>Analytics</strong></td><td>Privacy-safe usage analytics</td></tr>
+</table>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="3-system-architecture">3. System Architecture</h2>
+<div class="spacer"></div>
+<h3 id="high-level-flow">High-Level Flow</h3>
+<div class="spacer"></div>
+<pre><code>User (Voice/Text)
+       │
+       ▼
+┌──────────────────────────┐
+│    FRONTEND (Vite App)   │
+│  http://localhost:5173   │
+│                          │
+│  ┌─────────────────────┐ │
+│  │  src/router.js      │ │  ← Hash router (#landing, #speak, etc.)
+│  │  src/state.js       │ │  ← Shared state (query, scheme, language)
+│  │  src/ai.js          │ │  ← Client-side AI engine
+│  │  src/Schemes.json   │ │  ← Curated scheme knowledge base
+│  │  src/screens/       │ │  ← 12 screen modules
+│  │  src/components/    │ │  ← 8 reusable UI components
+│  └─────────────────────┘ │
+└──────────────────────────┘
+       │
+       ▼ (PLANNED — not yet built)
+┌──────────────────────────┐
+│    BACKEND API           │
+│  (Node.js / FastAPI)     │
+│                          │
+│  POST /api/query         │
+│  POST /api/speech-to-text│
+│  POST /api/text-to-speech│
+│  GET  /api/scheme/:id    │
+│  POST /api/intent        │
+└──────────────────────────┘
+       │
+       ▼
+┌──────────────────────────┐
+│  EXTERNAL SERVICES       │
+│  ├── Google STT API      │
+│  ├── Google TTS API      │
+│  ├── Gemini/OpenAI LLM   │
+│  └── PostgreSQL DB       │
+└──────────────────────────┘
+</code></pre>
+<div class="spacer"></div>
+<h3 id="data-flow-current-client-side">Data Flow (Current — Client-Side)</h3>
+<div class="spacer"></div>
+<pre><code>User types query (TypeScreen)
+         │
+         ▼
+setState({ currentQuery })           [src/state.js]
+         │
+navigate('processing')               [src/router.js]
+         │
+         ▼
+processQuery(query)                  [src/ai.js]
+  ├── searchSchemes(query)
+  │     └── scores all 10 schemes by keyword overlap
+  │         returns ranked [{scheme, confidence}]
+  ├── detectIntent(query)
+  │     └── classifies as OVERVIEW/ELIGIBILITY/DOCUMENTS/STEPS
+  └── generateExplanation(scheme, intent)
+        └── returns structured explanation object
+         │
+         ▼
+confidence &lt; 0.05?
+  ├── YES → navigate('clarification')   shows top 4 scheme cards
+  └── NO  → setState({ currentScheme, currentExplanation, currentIntent })
+              navigate('explanation')
+                   │
+                   ├── Documents btn → navigate('documents')
+                   │     pulls state.currentScheme.required_documents
+                   └── Steps btn → navigate('guidance')
+                         pulls state.currentScheme.application_process.steps
+</code></pre>
+<div class="spacer"></div>
+<h3 id="navigation-flow">Navigation Flow</h3>
+<div class="spacer"></div>
+<div class="mermaid">flowchart TD
+    A[Landing #landing] --&gt; B[Language #language]
+    B --&gt; C[Interaction Mode #interactionmode]
+    C --&gt;|Speak| D[Speak #speak]
+    C --&gt;|Type| E[Type #type]
+    D --&gt;|Mic tap| F[Listening #listening]
+    D --&gt;|Chip click| H[Processing #processing]
+    E --&gt;|Ask btn| H
+    F --&gt;|Speech result| H
+    H --&gt;|confidence &gt;= 0.05| I[Explanation #explanation]
+    H --&gt;|confidence &lt; 0.05| J[Clarification #clarification]
+    J --&gt;|Scheme card tap| I
+    I --&gt;|What's Next| K[WhatNext #whatnext]
+    I --&gt;|Docs btn| L[Documents #documents]
+    I --&gt;|Steps btn| M[Guidance #guidance]
+    L --&gt; M
+    M --&gt; K
+    K --&gt;|Ask Another| D</div>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="4-frontend-full-breakdown">4. Frontend — Full Breakdown</h2>
+<div class="spacer"></div>
+<h3 id="4-1-project-setup">4.1 Project Setup</h3>
+<div class="spacer"></div>
+<p><strong><span class="fileref">index.html</span></strong> — Single HTML entry point</p>
+<pre><code class="lang-html">&lt;div id="app"&gt;&lt;/div&gt;
+&lt;script type="module" src="/src/main.js"&gt;&lt;/script&gt;
+</code></pre>
+<ul style="margin-left:0px"><li><code>#app</code> is the mount point for all screens</li></ul>
+<ul style="margin-left:0px"><li><code>type="module"</code> enables ES module imports across all JS files</li></ul>
+<div class="spacer"></div>
+<p><strong><span class="fileref">package.json</span></strong> — Minimal deps</p>
+<pre><code class="lang-json">{ "scripts": { "dev": "vite", "build": "vite build" }, "devDependencies": { "vite": "^7.2.4" } }
+</code></pre>
+<p>No React, no framework. Pure vanilla JS with Vite for bundling. Vite handles hot module reload, ES module bundling, fast dev server.</p>
+<div class="spacer"></div>
+<p><strong><span class="fileref">src/main.js</span></strong> — App entry point (452 lines)</p>
+<ul style="margin-left:0px"><li>Imports all 12 screens and 8 components</li></ul>
+<ul style="margin-left:0px"><li>Calls <span class="fileref">injectStyles()</span> — collects all CSS exported from screen/component files and appends to <code><head></code></li></ul>
+<ul style="margin-left:0px"><li>Calls <span class="fileref">initRouter()</span> — starts hash-based routing</li></ul>
+<ul style="margin-left:0px"><li>Defines global <code>window.SaralAI.showToast()</code>, <span class="fileref">showLoading()</span>, <span class="fileref">hideLoading()</span> utilities</li></ul>
+<ul style="margin-left:0px"><li>Defines shared animation CSS: screen transitions, sound wave animation, skeleton loading, glassmorphism, stagger effects</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-2-design-system-src-styles-index-css-file-c-users-siddh-desktop-saralai-src-styles-index-css">4.2 Design System — <span class="fileref">src/styles/index.css</span></h3>
+<div class="spacer"></div>
+<p>All CSS variables defined in <code>:root</code>. Every value referenced as CSS custom property.</p>
+<div class="spacer"></div>
+<p><strong>Color Palette (Government Trust)</strong></p>
+<pre><code class="lang-css">--color-primary: #2563EB        /* Government blue */
+--color-primary-dark: #1D4ED8
+--color-primary-bg: rgba(37,99,235,0.08)
+--color-bg: #F7F8FA             /* Light page background */
+--color-bg-card: #FFFFFF        /* Card backgrounds */
+--color-text-primary: #1A1A2E
+--color-text-secondary: #64748B
+--color-text-muted: #94A3B8
+--color-success: #10B981
+--color-error: #EF4444
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Typography Scale</strong></p>
+<pre><code class="lang-css">--font-family: 'Inter', -apple-system, sans-serif
+--font-size-xs: 0.75rem  (12px)
+--font-size-sm: 0.875rem (14px)
+--font-size-base: 1rem   (16px)
+--font-size-lg: 1.125rem (18px)
+--font-size-xl: 1.25rem  (20px)
+--font-size-2xl: 1.5rem  (24px)
+--font-size-3xl: 1.875rem (30px)
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Spacing Scale</strong>: <code>--space-1</code> (4px) → <code>--space-20</code> (80px)</p>
+<div class="spacer"></div>
+<p><strong>Border Radius</strong>: <code>--radius-sm</code> (6px) → <code>--radius-full</code> (9999px)</p>
+<div class="spacer"></div>
+<p><strong>Animation keyframes defined</strong>: <code>fadeIn</code>, <code>slideUp</code>, <code>slideDown</code>, <code>scaleIn</code>, <code>bounce</code>, <code>wave</code>, <code>shimmer</code></p>
+<div class="spacer"></div>
+<p><strong>Utility classes</strong>: <code>.container</code>, <code>.screen</code>, <code>.screen-content</code>, <code>.screen-center</code>, <code>.card</code>, <code>.card-interactive</code>, <code>.card-selected</code>, <code>.btn</code>, <code>.btn-primary/secondary/ghost/dark/lg/sm</code>, <code>.icon/icon-sm/icon-lg/icon-xl</code>, <code>.animate-fadeIn/slideUp/etc.</code></p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-3-routing-src-router-js-file-c-users-siddh-desktop-saralai-src-router-js">4.3 Routing — <span class="fileref">src/router.js</span></h3>
+<div class="spacer"></div>
+<p><strong>How it works</strong>: Hash-based routing using <code>window.location.hash</code></p>
+<div class="spacer"></div>
+<pre><code class="lang-js">// All 12 routes
+const routes = {
+  landing, language, interactionmode, speak, type,
+  listening, processing, explanation, guidance,
+  documents, clarification, whatnext
+}
+
+// Navigation
+function navigate(route) {
+  window.location.hash = route;  // triggers hashchange event
+}
+
+// On hashchange → calls onRouteChangeCallback
+// main.js registers: onRouteChange(route =&gt; renderScreen(route))
+// renderScreen adds exit animation, then calls screen.render() + screen.init()
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Key design decisions</strong>:</p>
+<ul style="margin-left:0px"><li>Hash router = no server-side routing needed, works on any static host</li></ul>
+<ul style="margin-left:0px"><li>Each screen is rendered as an HTML string, not a real DOM tree (no virtual DOM)</li></ul>
+<ul style="margin-left:0px"><li><code>exit animation (200ms)</code> → clear <code>#app.innerHTML</code> → render new screen string → call <span class="fileref">init()</span> for event bindings</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-4-state-management-src-state-js-file-c-users-siddh-desktop-saralai-src-state-js">4.4 State Management — <span class="fileref">src/state.js</span></h3>
+<div class="spacer"></div>
+<p>Flat singleton object with pub/sub listeners.</p>
+<div class="spacer"></div>
+<pre><code class="lang-js">const state = {
+  // Language
+  selectedLanguage: 'en',
+  languages: [{code, native, english}],  // 8 languages
+
+  // Interaction
+  interactionMode: 'voice',   // 'voice' | 'text'
+  isListening: false,
+  isProcessing: false,
+
+  // Query
+  currentQuery: '',           // User's typed/spoken question
+
+  // Step tracking
+  currentStep: 1,
+  totalSteps: 3,
+
+  // Query Results (set by ProcessingScreen after ai.js runs)
+  currentScheme: null,        // Full scheme object from Schemes.json
+  currentIntent: null,        // 'OVERVIEW' | 'ELIGIBILITY' | 'DOCUMENTS' | 'STEPS'
+  currentExplanation: null,   // { schemeName, summary, eligibilityPoints, benefitPoints, steps, ... }
+  topMatches: [],             // All ranked scheme matches (for clarification screen)
+  queryHistory: []            // All previous queries this session
+}
+</code></pre>
+<div class="spacer"></div>
+<p><strong>API</strong>:</p>
+<ul style="margin-left:0px"><li><span class="fileref">getState()</span> → returns shallow copy of state</li></ul>
+<ul style="margin-left:0px"><li><span class="fileref">setState(updates)</span> → merges updates, notifies all subscribers</li></ul>
+<ul style="margin-left:0px"><li><span class="fileref">subscribe(fn)</span> → registers listener, returns unsubscribe fn</li></ul>
+<ul style="margin-left:0px"><li><span class="fileref">getSelectedLanguage()</span> → returns language object for current code</li></ul>
+<ul style="margin-left:0px"><li><span class="fileref">setSelectedLanguage(code)</span> → convenience wrapper</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-5-ai-query-engine-src-ai-js-file-c-users-siddh-desktop-saralai-src-ai-js">4.5 AI Query Engine — <span class="fileref">src/ai.js</span></h3>
+<div class="spacer"></div>
+<p><strong>Purpose</strong>: Replaces a backend AI service with a pure client-side JavaScript keyword engine. Reads all data from <span class="fileref">Schemes.json</span> at import time.</p>
+<div class="spacer"></div>
+<h4 id="searchschemes-query-file-c-users-siddh-desktop-saralai-src-ai-js-146-164-scheme-search"><span class="fileref">searchSchemes(query)</span> — Scheme Search</h4>
+<div class="spacer"></div>
+<p>Scores all 10 schemes using keyword overlap:</p>
+<div class="spacer"></div>
+<pre><code class="lang-js">// Each scheme has a keyword list like:
+SCHEME_KEYWORDS = {
+  PM_KISAN: ['kisan', 'farmer', 'kheti', 'pm kisan', 'samman nidhi', ...],
+  PM_JAY: ['ayushman', 'health', 'hospital', 'cashless', 'bimari', ...],
+  ...
+}
+
+// Scoring algorithm:
+function scoreScheme(query, schemeId, scheme) {
+  let score = 0, totalWeight = 0;
+  // 1. Direct keyword match: score += 1 per keyword hit
+  // 2. Scheme name word match: score += 0.5
+  // 3. Category match: score += 0.3
+  return score / totalWeight;  // 0–1 confidence
+}
+</code></pre>
+<div class="spacer"></div>
+<p>Returns <code>[{scheme, confidence}]</code> sorted descending.</p>
+<div class="spacer"></div>
+<h4 id="detectintent-query-file-c-users-siddh-desktop-saralai-src-ai-js-165-182-intent-classification"><span class="fileref">detectIntent(query)</span> — Intent Classification</h4>
+<div class="spacer"></div>
+<p>Four intent buckets with keyword lists:</p>
+<pre><code class="lang-js">INTENT_KEYWORDS = {
+  DOCUMENTS: ['document', 'papers', 'kya chahiye', 'kaagaz', 'aadhaar', ...],
+  STEPS: ['apply', 'kaise', 'process', 'karna', 'fill', 'form', ...],
+  ELIGIBILITY: ['eligible', 'kaun', 'paatra', 'milega', 'can i apply', ...],
+  OVERVIEW: ['what is', 'kya hai', 'explain', 'batao', 'yojana', ...]
+}
+</code></pre>
+<p>Counts keyword matches per intent bucket → returns highest scoring intent.</p>
+<div class="spacer"></div>
+<h4 id="generateexplanation-scheme-intent-file-c-users-siddh-desktop-saralai-src-ai-js-183-246-response-generator"><span class="fileref">generateExplanation(scheme, intent)</span> — Response Generator</h4>
+<div class="spacer"></div>
+<p>Reads from scheme object, builds a structured response:</p>
+<pre><code class="lang-js">return {
+  schemeId, schemeName, category, intent,
+  summary,              // context-aware lead sentence
+  leadPoints,           // primary bullets based on intent
+  eligibilityPoints,    // from scheme.eligibility_criteria[].condition
+  benefitPoints,        // from scheme.benefits.details[]
+  steps,                // from scheme.application_process.steps[]
+  documents,            // from scheme.required_documents[]
+  confusions,           // from scheme.common_confusions[]
+  limitations,          // from scheme.limitations_and_notes[]
+  officialSource,       // from scheme.source_information.official_website
+  applicationMode,      // from scheme.application_process.mode
+  disclaimer: 'This information is for guidance only.'
+}
+</code></pre>
+<div class="spacer"></div>
+<h4 id="processquery-query-file-c-users-siddh-desktop-saralai-src-ai-js-247-271-main-pipeline"><span class="fileref">processQuery(query)</span> — Main Pipeline</h4>
+<div class="spacer"></div>
+<pre><code class="lang-js">export function processQuery(query) {
+  const ranked = searchSchemes(query);       // search all 10 schemes
+  const { scheme, confidence } = ranked[0]; // top match
+  if (confidence &lt; 0.05) return { result: null, confidence, topMatches: ranked };
+  const intent = detectIntent(query);        // classify intent
+  const result = generateExplanation(scheme, intent);
+  return { result, confidence, topMatches: ranked };
+}
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Threshold</strong>: confidence < 0.05 → go to Clarification screen. ≥ 0.05 → show Explanation.</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-6-icons-library-src-icons-js-file-c-users-siddh-desktop-saralai-src-icons-js">4.6 Icons Library — <span class="fileref">src/icons.js</span></h3>
+<div class="spacer"></div>
+<p>Returns inline SVG strings. Used as <code>${getIcon('mic', 'icon')}</code> inside HTML template literals.</p>
+<div class="spacer"></div>
+<p><strong>Available icons</strong>: <code>mic</code>, <code>micOff</code>, <code>stop</code>, <code>waves</code>, <code>arrowRight</code>, <code>arrowLeft</code>, <code>check</code>, <code>x</code>, <code>info</code>, <code>government</code>, <code>keyboard</code>, <code>translate</code>, <code>idCard</code>, <code>language</code></p>
+<div class="spacer"></div>
+<p>Each icon is a pure SVG <code><svg viewBox="0 0 24 24"></code> with <code>currentColor</code> stroke, no external files needed.</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-7-components-8-files">4.7 Components (8 Files)</h3>
+<div class="spacer"></div>
+<h4 id="header-js-file-c-users-siddh-desktop-saralai-src-components-header-js-sticky-top-bar"><span class="fileref">Header.js</span> — Sticky top bar</h4>
+<ul style="margin-left:0px"><li><strong>Props</strong>: <code>showNav</code>, <code>showLanguageToggle</code>, <code>showVoiceAssist</code>, <code>showBack</code></li></ul>
+<ul style="margin-left:0px"><li>Shows SaralAI logo (links to #landing) by default</li></ul>
+<ul style="margin-left:0px"><li><code>showLanguageToggle=true</code> → shows "English / English" pill → navigates to #language on click</li></ul>
+<ul style="margin-left:0px"><li><code>showNav=true</code> → shows nav links (Home, Services, Language, Help)</li></ul>
+<ul style="margin-left:0px"><li><span class="fileref">initHeader()</span> → attaches click listeners to back and language toggle buttons</li></ul>
+<div class="spacer"></div>
+<h4 id="button-js-file-c-users-siddh-desktop-saralai-src-components-button-js-reusable-button"><span class="fileref">Button.js</span> — Reusable button</h4>
+<ul style="margin-left:0px"><li><strong>Props</strong>: <code>text</code>, <code>variant</code> (primary/secondary/ghost/dark), <code>size</code> (default/lg/sm), <code>icon</code>, <code>iconPosition</code>, <code>fullWidth</code>, <span class="fileref">id</span>, <code>disabled</code></li></ul>
+<ul style="margin-left:0px"><li>Returns HTML string: <code><button class="btn btn-{variant} btn-{size}"></code></li></ul>
+<ul style="margin-left:0px"><li>Icons rendered inline from <span class="fileref">icons.js</span></li></ul>
+<div class="spacer"></div>
+<h4 id="micbutton-js-file-c-users-siddh-desktop-saralai-src-components-micbutton-js-microphone-button"><span class="fileref">MicButton.js</span> — Microphone button</h4>
+<ul style="margin-left:0px"><li><code>MicButton({size, isListening, id})</code> → large circle button with pulse animation rings</li></ul>
+<ul style="margin-left:0px"><li><code>MicButtonSmall({id, text})</code> → compact mic button with label below</li></ul>
+<ul style="margin-left:0px"><li>Animated CSS rings expand outward when <code>isListening=true</code></li></ul>
+<div class="spacer"></div>
+<h4 id="languagecard-js-file-c-users-siddh-desktop-saralai-src-components-languagecard-js"><span class="fileref">LanguageCard.js</span></h4>
+<ul style="margin-left:0px"><li><code>LanguageCard({code, native, english, selected})</code> → single language card</li></ul>
+<ul style="margin-left:0px"><li><code>LanguageGrid(languages, selectedLanguage)</code> → 2×4 grid of language cards</li></ul>
+<ul style="margin-left:0px"><li>Selected state: blue border + checkmark overlay</li></ul>
+<div class="spacer"></div>
+<h4 id="audioplayer-js-file-c-users-siddh-desktop-saralai-src-components-audioplayer-js"><span class="fileref">AudioPlayer.js</span></h4>
+<ul style="margin-left:0px"><li><code>AudioPlayer({title, subtitle, duration, currentTime})</code> → "Listen to explanation" card</li></ul>
+<ul style="margin-left:0px"><li>Shows waveform animation bars, play/pause button, time display</li></ul>
+<ul style="margin-left:0px"><li>Currently static (no real audio — TTS integration planned for backend phase)</li></ul>
+<div class="spacer"></div>
+<h4 id="progressindicator-js-file-c-users-siddh-desktop-saralai-src-components-progressindicator-js"><span class="fileref">ProgressIndicator.js</span></h4>
+<ul style="margin-left:0px"><li><code>ProgressIndicator({current, total, label})</code> → progress bar + step label</li></ul>
+<ul style="margin-left:0px"><li>Used in GuidanceScreen to show "Step 2 of 5"</li></ul>
+<ul style="margin-left:0px"><li>CSS animated fill bar</li></ul>
+<div class="spacer"></div>
+<h4 id="checklistitem-js-file-c-users-siddh-desktop-saralai-src-components-checklistitem-js"><span class="fileref">ChecklistItem.js</span></h4>
+<ul style="margin-left:0px"><li><span class="fileref">ChecklistItem({title, subtitle, icon, checked, id})</span> → tappable document item</li></ul>
+<ul style="margin-left:0px"><li><span class="fileref">Checklist(items)</span> → stacked list of checklist items</li></ul>
+<ul style="margin-left:0px"><li>Checkbox animates to filled blue when checked</li></ul>
+<ul style="margin-left:0px"><li>Used in DocumentsScreen for required documents list</li></ul>
+<div class="spacer"></div>
+<h4 id="stepcard-js-file-c-users-siddh-desktop-saralai-src-components-stepcard-js"><span class="fileref">StepCard.js</span></h4>
+<ul style="margin-left:0px"><li><code>StepCard({number, title, description, icon, active})</code> → single numbered step card</li></ul>
+<ul style="margin-left:0px"><li><code>NumberedSteps(stepsArray)</code> → renders step list</li></ul>
+<ul style="margin-left:0px"><li>Used in legacy ExplanationScreen (now inline numbered list used in rewrite)</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h3 id="4-8-screens-12-files">4.8 Screens (12 Files)</h3>
+<div class="spacer"></div>
+<p>Each screen file exports three things:</p>
+<ol><li><code>ScreenName()</code> → returns HTML string (pure function, no DOM access)</li></ol>
+<ol><li><code>initScreenName()</code> → called after render, attaches event listeners</li></ol>
+<ol><li><code>screenNameStyles</code> → CSS string injected into <code><head></code> by <span class="fileref">main.js</span></li></ol>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="landingscreen-js-file-c-users-siddh-desktop-saralai-src-screens-landingscreen-js-route-landing"><span class="fileref">LandingScreen.js</span> — Route: <code>#landing</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Welcome screen. Builds trust, explains purpose in one line.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Animated concentric ring icon (government building SVG inside blue circle)</li></ul>
+<ul style="margin-left:0px"><li>Heading: "A simple helper to understand government services"</li></ul>
+<ul style="margin-left:0px"><li>Subtitle: "Voice-first AI assistant"</li></ul>
+<ul style="margin-left:0px"><li>Single "Start" button → navigates to <code>#language</code></li></ul>
+<div class="spacer"></div>
+<p><strong>No state reads, no data dependencies.</strong> Pure UI.</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="languagescreen-js-file-c-users-siddh-desktop-saralai-src-screens-languagescreen-js-route-language"><span class="fileref">LanguageScreen.js</span> — Route: <code>#language</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Language selection. Ensures user comfort from first interaction.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Reads <code>state.languages</code> (8 languages: en, hi, bn, te, mr, ta, gu, kn)</li></ul>
+<ul style="margin-left:0px"><li>Renders <code>LanguageGrid</code> component</li></ul>
+<ul style="margin-left:0px"><li>On card click: calls <span class="fileref">setSelectedLanguage(code)</span>, adds checkmark, removes previous selection</li></ul>
+<ul style="margin-left:0px"><li>"Continue" button → navigates to <code>#interactionmode</code></li></ul>
+<ul style="margin-left:0px"><li>Footer hint with mic icon: "You can also say the name of the language"</li></ul>
+<div class="spacer"></div>
+<p><strong>State written</strong>: <code>selectedLanguage</code></p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="interactionmodescreen-js-file-c-users-siddh-desktop-saralai-src-screens-interactionmodescreen-js-route-interactionmode"><span class="fileref">InteractionModeScreen.js</span> — Route: <code>#interactionmode</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Choose between voice (Speak) or keyboard (Type) input.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Two large card-buttons: "Speak" (primary, blue gradient) and "Type" (secondary, grey)</li></ul>
+<ul style="margin-left:0px"><li>"Speak" card has "Recommended" badge</li></ul>
+<ul style="margin-left:0px"><li>Click Speak → setState <code>interactionMode: 'voice'</code> → navigate <code>#speak</code></li></ul>
+<ul style="margin-left:0px"><li>Click Type → setState <code>interactionMode: 'text'</code> → navigate <code>#type</code></li></ul>
+<ul style="margin-left:0px"><li>Footer: "You can switch between modes anytime"</li></ul>
+<div class="spacer"></div>
+<p>Auto-proceeds on selection (no extra continue button).</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="speakscreen-js-file-c-users-siddh-desktop-saralai-src-screens-speakscreen-js-route-speak"><span class="fileref">SpeakScreen.js</span> — Route: <code>#speak</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Primary voice query entry point.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Large <code>MicButton</code> center-stage with pulsing rings</li></ul>
+<ul style="margin-left:0px"><li>Example query: "Ghar ke liye sarkari madad kaise milegi?"</li></ul>
+<ul style="margin-left:0px"><li>4 quick example chips (PM Kisan, PMAY, Ayushman, Ration Card) — clicking any chip sets <code>currentQuery</code> directly and navigates to <code>#processing</code> (bypasses voice)</li></ul>
+<ul style="margin-left:0px"><li>"Type instead" link → <code>#type</code></li></ul>
+<div class="spacer"></div>
+<p><strong>Voice logic</strong>:</p>
+<pre><code class="lang-js">// Mic tap with Speech API support:
+recognition = new SpeechRecognition();
+recognition.lang = 'hi-IN,en-IN';
+window._saralaiRecognition = recognition; // pass to ListeningScreen
+recognition.start();
+navigate('listening');
+
+// Without Speech API support:
+navigate('type');  // graceful fallback
+</code></pre>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="typescreen-js-file-c-users-siddh-desktop-saralai-src-screens-typescreen-js-route-type"><span class="fileref">TypeScreen.js</span> — Route: <code>#type</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Keyboard input fallback/alternative.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li><code><textarea></code> with 500 char limit counter</li></ul>
+<ul style="margin-left:0px"><li>Example query placeholder text</li></ul>
+<ul style="margin-left:0px"><li>4 quick chips: Aadhaar Card, PM Awas Yojana, Ration Card, Pension Scheme — clicking populates textarea</li></ul>
+<ul style="margin-left:0px"><li>"Ask →" button: reads textarea value → <span class="fileref">setState({ currentQuery })</span> → <span class="fileref">navigate('processing')</span></li></ul>
+<ul style="margin-left:0px"><li>"Prefer to speak instead?" link → <code>#speak</code></li></ul>
+<ul style="margin-left:0px"><li>Input auto-focuses after 300ms delay</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="listeningscreen-js-file-c-users-siddh-desktop-saralai-src-screens-listeningscreen-js-route-listening"><span class="fileref">ListeningScreen.js</span> — Route: <code>#listening</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Real-time speech recognition feedback.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Animated mic button (pulsing rings active state)</li></ul>
+<ul style="margin-left:0px"><li>Status text: "Sun raha hoon…" / "Listening…"</li></ul>
+<ul style="margin-left:0px"><li>Transcript box appears when speech is recognized</li></ul>
+<ul style="margin-left:0px"><li>"Stop" button → stops recognition → navigates back to <code>#speak</code></li></ul>
+<div class="spacer"></div>
+<p><strong>Speech logic</strong>:</p>
+<pre><code class="lang-js">// Gets recognition instance created by SpeakScreen
+const recognition = window._saralaiRecognition;
+
+recognition.onresult = (event) =&gt; {
+  const transcript = event.results[0][0].transcript;
+  // Shows transcript in UI
+  setState({ currentQuery: transcript });
+  setTimeout(() =&gt; navigate('processing'), 700);
+};
+
+recognition.onerror = () =&gt; {
+  // Navigate back to speak after 2s
+};
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Fallback</strong>: If navigated to directly (no recognition), demo timer redirects to <code>#speak</code> after 3s.</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="processingscreen-js-file-c-users-siddh-desktop-saralai-src-screens-processingscreen-js-route-processing"><span class="fileref">ProcessingScreen.js</span> — Route: <code>#processing</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: THE BRAIN — runs the actual query, determines where to go.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Animated processing rings + wave icon</li></ul>
+<ul style="margin-left:0px"><li>Hindi: "Samajh raha hoon…" / English: "Finding the best information for you"</li></ul>
+<ul style="margin-left:0px"><li>Query badge shows the user's question text</li></ul>
+<ul style="margin-left:0px"><li>"Cancel" button → back to <code>#speak</code></li></ul>
+<ul style="margin-left:0px"><li>Status text updates as pipeline runs</li></ul>
+<div class="spacer"></div>
+<p><strong>Pipeline</strong>:</p>
+<pre><code class="lang-js">// On init:
+setTimeout(() =&gt; {
+  // 1. Read query from state
+  const query = getState().currentQuery;
+  if (!query) { navigate('clarification'); return; }
+
+  // 2. Run AI pipeline
+  const { result, confidence, topMatches } = processQuery(query);
+
+  // 3. Store top matches for clarification screen
+  setState({ topMatches });
+
+  // 4. Route based on confidence
+  if (confidence &lt; 0.05 || !result) {
+    navigate('clarification');
+  } else {
+    setState({ currentScheme: topMatches[0].scheme, currentExplanation: result, currentIntent: result.intent });
+    navigate('explanation');
+  }
+}, 600 + 800);  // Visual delays for UX feel
+</code></pre>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="explanationscreen-js-file-c-users-siddh-desktop-saralai-src-screens-explanationscreen-js-route-explanation"><span class="fileref">ExplanationScreen.js</span> — Route: <code>#explanation</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Core value delivery — the simplified scheme explanation.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong> (all data-driven):</p>
+<ul style="margin-left:0px"><li>Category badge (e.g., "Housing", "Health Assurance")</li></ul>
+<ul style="margin-left:0px"><li>Scheme name as H1 (e.g., "Pradhan Mantri Kisan Samman Nidhi")</li></ul>
+<ul style="margin-left:0px"><li>Summary sentence from explanation object</li></ul>
+<ul style="margin-left:0px"><li><code>AudioPlayer</code> component (static UI — no real audio yet)</li></ul>
+<ul style="margin-left:0px"><li><strong>Sections based on intent</strong>:</li></ul>
+<ul style="margin-left:16px"><li><code>OVERVIEW</code> / <code>ELIGIBILITY</code>: "Who is this for?" bullets + "What are the benefits?" bullets</li></ul>
+<ul style="margin-left:16px"><li><code>DOCUMENTS</code>: Document list with ✓/optional labels</li></ul>
+<ul style="margin-left:16px"><li><code>STEPS</code>: Numbered application steps</li></ul>
+<ul style="margin-left:0px"><li>Application mode badge ("Offline / Assisted")</li></ul>
+<ul style="margin-left:0px"><li>Red disclaimer box with official source link</li></ul>
+<ul style="margin-left:0px"><li>Action buttons: Back | What's Next → WhatNext | Documents needed → Documents | Step-by-step → Guidance | Ask Another Question</li></ul>
+<div class="spacer"></div>
+<p><strong>Fallback</strong>: If no <code>currentExplanation</code> in state (e.g., direct URL), shows "No query found" with prompt to ask a question.</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="clarificationscreen-js-file-c-users-siddh-desktop-saralai-src-screens-clarificationscreen-js-route-clarification"><span class="fileref">ClarificationScreen.js</span> — Route: <code>#clarification</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: When query is too vague, shows matching schemes to choose from.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Shows current query in a badge: <code>"help me please"</code></li></ul>
+<ul style="margin-left:0px"><li>Up to 4 scheme cards from <code>state.topMatches</code>, each with:</li></ul>
+<ul style="margin-left:16px"><li>Category emoji (🏠 Housing, 🌾 Farmer, 🏥 Health, etc.)</li></ul>
+<ul style="margin-left:16px"><li>Scheme name</li></ul>
+<ul style="margin-left:16px"><li>Short description (<code>who_is_it_for.short</code>)</li></ul>
+<ul style="margin-left:16px"><li>Arrow icon</li></ul>
+<ul style="margin-left:0px"><li><strong>On card tap</strong>:</li></ul>
+<p>  ```js</p>
+<p>  const selectedScheme = topMatches[idx].scheme;</p>
+<p>  const intent = detectIntent(currentQuery);</p>
+<p>  const explanation = generateExplanation(selectedScheme, intent);</p>
+<p>  setState({ currentScheme, currentIntent, currentExplanation });</p>
+<p>  navigate('explanation');</p>
+<p>  ```</p>
+<ul style="margin-left:0px"><li>Divider: "or ask again"</li></ul>
+<ul style="margin-left:0px"><li>Mic button → <code>#speak</code></li></ul>
+<ul style="margin-left:0px"><li>Type button → <code>#type</code></li></ul>
+<ul style="margin-left:0px"><li>6 example chips with pre-filled queries (PM Kisan, PMAY, Ayushman, etc.)</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="documentsscreen-js-file-c-users-siddh-desktop-saralai-src-screens-documentsscreen-js-route-documents"><span class="fileref">DocumentsScreen.js</span> — Route: <code>#documents</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Shows the document checklist for the current scheme.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Title: "Documents You May Need" + scheme name subtitle</li></ul>
+<ul style="margin-left:0px"><li>Reads <code>state.currentScheme.required_documents</code></li></ul>
+<ul style="margin-left:0px"><li>Splits into required (✅ label) and optional sections</li></ul>
+<ul style="margin-left:0px"><li>Each document rendered as <span class="fileref">ChecklistItem</span> (clickable to toggle check)</li></ul>
+<ul style="margin-left:0px"><li>TTS "Read this to me" button → uses <code>window.speechSynthesis</code> to read docs aloud</li></ul>
+<ul style="margin-left:0px"><li>"I have these documents →" → <code>#guidance</code></li></ul>
+<ul style="margin-left:0px"><li>Note card: "Requirements may vary by State and local office"</li></ul>
+<ul style="margin-left:0px"><li>Fallback docs shown if no scheme data in state</li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="guidancescreen-js-file-c-users-siddh-desktop-saralai-src-screens-guidancescreen-js-route-guidance"><span class="fileref">GuidanceScreen.js</span> — Route: <code>#guidance</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Step-by-step application process tracker.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Header + scheme name subtitle</li></ul>
+<ul style="margin-left:0px"><li>Application mode badge (Online / Offline / Assisted)</li></ul>
+<ul style="margin-left:0px"><li><code>ProgressIndicator</code> component showing "Step N of M"</li></ul>
+<ul style="margin-left:0px"><li>Timeline steps from <code>state.currentScheme.application_process.steps</code>:</li></ul>
+<ul style="margin-left:16px"><li>Completed steps → green checkmark circle + strikethrough text</li></ul>
+<ul style="margin-left:16px"><li>Active step → blue number + "Current Step" badge + highlighted text</li></ul>
+<ul style="margin-left:16px"><li>Pending steps → grey outlined circle</li></ul>
+<ul style="margin-left:0px"><li>"Mark Step Done →" button → increments <code>state.currentStep</code> → re-renders screen</li></ul>
+<ul style="margin-left:0px"><li>When all steps done → "✓ All steps noted!" → navigates to <code>#whatnext</code></li></ul>
+<ul style="margin-left:0px"><li>Official portal link card</li></ul>
+<ul style="margin-left:0px"><li>Warning disclaimer box</li></ul>
+<ul style="margin-left:0px"><li>"Ask Another Question" → clears state + <code>#speak</code></li></ul>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h4 id="whatnextscreen-js-file-c-users-siddh-desktop-saralai-src-screens-whatnextscreen-js-route-whatnext"><span class="fileref">WhatNextScreen.js</span> — Route: <code>#whatnext</code></h4>
+<div class="spacer"></div>
+<p><strong>What it does</strong>: Summary + follow-up options after exploring a scheme.</p>
+<div class="spacer"></div>
+<p><strong>Key elements</strong>:</p>
+<ul style="margin-left:0px"><li>Summary card with scheme name, description, category badge (all from state)</li></ul>
+<ul style="margin-left:0px"><li>Government icon in blue box</li></ul>
+<ul style="margin-left:0px"><li>"What would you like to do next?" heading</li></ul>
+<ul style="margin-left:0px"><li>4 option buttons: Explain again | Documents | Step-by-step | Ask another question</li></ul>
+<ul style="margin-left:0px"><li>Official portal link</li></ul>
+<ul style="margin-left:0px"><li>Disclaimer: "This information is for guidance only"</li></ul>
+<ul style="margin-left:0px"><li>Small mic button (tap to speak new query)</li></ul>
+<div class="spacer"></div>
+<p><strong>"Ask Another Question"</strong> resets: <code>currentScheme</code>, <code>currentExplanation</code>, <code>currentIntent</code>, <code>currentQuery</code>, <code>currentStep</code> all cleared before navigating to <code>#speak</code>.</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="5-backend-full-plan">5. Backend — Full Plan</h2>
+<div class="spacer"></div>
+<blockquote>⚠️ The backend is <strong>not yet built</strong>. The current frontend uses a client-side AI engine. This section documents the full plan for the production backend.</blockquote>
+<div class="spacer"></div>
+<h3 id="5-1-technology-stack">5.1 Technology Stack</h3>
+<div class="spacer"></div>
+<table>
+<tr><th>Layer</th><th>Choice</th><th>Reason</th></tr>
+<tr><td>Runtime</td><td>Node.js (Express) or Python (FastAPI)</td><td>Fast REST APIs</td></tr>
+<tr><td>Database</td><td>PostgreSQL + JSON columns</td><td>Structured scheme data</td></tr>
+<tr><td>AI</td><td>Google Gemini API or OpenAI GPT-4</td><td>Advanced simplification</td></tr>
+<tr><td>STT</td><td>Google Cloud Speech-to-Text</td><td>Indian language accuracy</td></tr>
+<tr><td>TTS</td><td>Google Cloud Text-to-Speech</td><td>Natural Indian voice</td></tr>
+<tr><td>Cache</td><td>Redis</td><td>Rate limit, session cache</td></tr>
+<tr><td>Hosting</td><td>Google Cloud Run / Railway</td><td>Auto-scale, low cold start</td></tr>
+</table>
+<div class="spacer"></div>
+<h3 id="5-2-api-endpoints">5.2 API Endpoints</h3>
+<div class="spacer"></div>
+<h4 id="post-api-query"><code>POST /api/query</code></h4>
+<p>Main query pipeline endpoint.</p>
+<div class="spacer"></div>
+<p><strong>Request</strong>:</p>
+<pre><code class="lang-json">{
+  "query": "PM Kisan scheme kya hai",
+  "language": "hi",
+  "session_id": "optional-uuid"
+}
+</code></pre>
+<p><strong>Response</strong>:</p>
+<pre><code class="lang-json">{
+  "type": "explanation",
+  "intent": "OVERVIEW",
+  "confidence": 0.82,
+  "content": {
+    "scheme_name": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+    "category": "Farmers / Income Support",
+    "summary": "Direct income support for landholding farmer families",
+    "eligibility_points": ["..."],
+    "benefit_points": ["..."],
+    "steps": ["..."],
+    "documents": [{"name": "Aadhaar", "mandatory": true}],
+    "official_source": "https://pmkisan.gov.in",
+    "disclaimer": "This information is for guidance only."
+  },
+  "needs_clarification": false,
+  "clarification_options": []
+}
+</code></pre>
+<div class="spacer"></div>
+<h4 id="post-api-speech-to-text"><code>POST /api/speech-to-text</code></h4>
+<p><strong>Input</strong>: Audio binary (WebM/WAV/OGG)</p>
+<p><strong>Output</strong>: <code>{ text, language, confidence }</code></p>
+<div class="spacer"></div>
+<h4 id="post-api-text-to-speech"><code>POST /api/text-to-speech</code></h4>
+<p><strong>Input</strong>: <code>{ text, language: "hi" }</code></p>
+<p><strong>Output</strong>: Audio stream (MP3/WebM)</p>
+<div class="spacer"></div>
+<h4 id="get-api-scheme-schemeid"><code>GET /api/scheme/:schemeId</code></h4>
+<p><strong>Output</strong>: Full scheme JSON from database</p>
+<div class="spacer"></div>
+<h4 id="post-api-intent"><code>POST /api/intent</code></h4>
+<p><strong>Input</strong>: <code>{ text, language }</code></p>
+<p><strong>Output</strong>: <code>{ intent, scheme_id, confidence }</code></p>
+<div class="spacer"></div>
+<h3 id="5-3-services">5.3 Services</h3>
+<div class="spacer"></div>
+<p><strong><code>services/ai.js</code></strong> (or <code>services/ai.py</code>)</p>
+<pre><code class="lang-js">async function simplifyScheme(scheme, intent, language) {
+  const prompt = buildSystemPrompt(language);
+  const facts = JSON.stringify(schemeToFacts(scheme));
+  const response = await gemini.generateContent({
+    systemInstruction: prompt,
+    contents: [{ role: 'user', parts: [{ text: `Facts: ${facts}\nQuestion: ${userQuery}` }] }]
+  });
+  return parseResponse(response);
+}
+</code></pre>
+<div class="spacer"></div>
+<p><strong><code>services/stt.js</code></strong></p>
+<pre><code class="lang-js">async function transcribeAudio(audioBuffer, languageCode = 'hi-IN') {
+  const client = new SpeechClient();
+  const [response] = await client.recognize({
+    audio: { content: audioBuffer.toString('base64') },
+    config: { languageCode, alternativeLanguageCodes: ['en-IN'] }
+  });
+  return response.results[0].alternatives[0].transcript;
+}
+</code></pre>
+<div class="spacer"></div>
+<p><strong><code>services/tts.js</code></strong></p>
+<pre><code class="lang-js">async function textToSpeech(text, language = 'hi-IN') {
+  const client = new TextToSpeechClient();
+  const [response] = await client.synthesizeSpeech({
+    input: { text },
+    voice: { languageCode: language, ssmlGender: 'FEMALE' },
+    audioConfig: { audioEncoding: 'MP3' }
+  });
+  return response.audioContent;
+}
+</code></pre>
+<div class="spacer"></div>
+<h3 id="5-4-ai-integration">5.4 AI Integration</h3>
+<div class="spacer"></div>
+<p><strong>System Prompt Template</strong>:</p>
+<pre><code>You are a public-service explainer for Indian government schemes.
+
+RULES:
+• Use ONLY the provided facts — never add information
+• Explain in very simple {language}
+• Use bullet points and short sentences
+• Maximum 5 main points
+• No technical or legal terms
+• Do NOT guarantee eligibility or benefits
+• Always end with: "Yeh sirf jaankari ke liye hai / This is for guidance only"
+
+TONE: Calm, respectful, patient, human-like, non-judgmental
+
+FACTS:
+{scheme_data_json}
+
+USER QUESTION:
+{user_query}
+
+YOUR TASK: Explain the relevant information simply and clearly.
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Intent Detection Prompt</strong>:</p>
+<pre><code>Classify into ONE of: SCHEME_OVERVIEW, ELIGIBILITY, DOCUMENTS, APPLICATION_STEPS, CLARIFICATION_NEEDED
+Query: "{query}", Language: {language}
+Respond: { "intent": "TYPE", "scheme_mentioned": "name or null", "confidence": 0.0-1.0 }
+</code></pre>
+<div class="spacer"></div>
+<h3 id="5-5-data-models">5.5 Data Models</h3>
+<div class="spacer"></div>
+<p><strong>Scheme</strong> (PostgreSQL):</p>
+<pre><code class="lang-sql">CREATE TABLE schemes (
+  scheme_id VARCHAR(20) PRIMARY KEY,
+  scheme_name TEXT NOT NULL,
+  category VARCHAR(50),
+  who_is_it_for JSONB,
+  benefits JSONB,
+  eligibility_criteria JSONB,
+  required_documents JSONB,
+  application_process JSONB,
+  common_confusions JSONB,
+  limitations_and_notes JSONB[],
+  source_information JSONB,
+  ai_usage_rules JSONB,
+  last_verified_on DATE
+);
+</code></pre>
+<div class="spacer"></div>
+<p><strong>Session</strong> (Redis, TTL 30min):</p>
+<pre><code class="lang-json">{
+  "session_id": "uuid",
+  "language": "hi",
+  "query_history": ["PM Kisan kya hai", "documents needed"],
+  "current_scheme_id": "PM_KISAN"
+}
+</code></pre>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="6-data-layer-schemes-json">6. Data Layer — Schemes.json</h2>
+<div class="spacer"></div>
+<p>Location: <span class="fileref">src/Schemes.json</span> — 666 lines, 37KB</p>
+<div class="spacer"></div>
+<p>Contains all 10 MVP schemes, curated and verified from official government portals.</p>
+<div class="spacer"></div>
+<table>
+<tr><th>#</th><th>scheme_id</th><th>Scheme Name</th><th>Category</th></tr>
+<tr><td>1</td><td><code>PMAY_U</code></td><td>Pradhan Mantri Awas Yojana Urban</td><td>Housing</td></tr>
+<tr><td>2</td><td><code>PMAY_G</code></td><td>Pradhan Mantri Awas Yojana Gramin</td><td>Housing</td></tr>
+<tr><td>3</td><td><code>PM_KISAN</code></td><td>PM Kisan Samman Nidhi</td><td>Farmers</td></tr>
+<tr><td>4</td><td><code>PM_JAY</code></td><td>Ayushman Bharat PM-JAY</td><td>Health</td></tr>
+<tr><td>5</td><td><code>NFSA_PDS</code></td><td>Ration Card (NFSA)</td><td>Food Security</td></tr>
+<tr><td>6</td><td><code>PMJDY</code></td><td>PM Jan Dhan Yojana</td><td>Banking</td></tr>
+<tr><td>7</td><td><code>SSY</code></td><td>Sukanya Samriddhi Yojana</td><td>Savings/Child</td></tr>
+<tr><td>8</td><td><code>PMUY</code></td><td>PM Ujjwala Yojana</td><td>LPG/Energy</td></tr>
+<tr><td>9</td><td><code>NSAP</code></td><td>National Social Assistance (Pensions)</td><td>Social Pensions</td></tr>
+<tr><td>10</td><td><code>PMKVY</code></td><td>PM Kaushal Vikas Yojana</td><td>Skill Dev</td></tr>
+<tr><td>11</td><td><code>NSP</code></td><td>National Scholarship Portal</td><td>Education</td></tr>
+</table>
+<div class="spacer"></div>
+<p><strong>Each scheme has</strong>: <code>scheme_id</code>, <code>scheme_name</code>, <code>category</code>, <code>coverage</code>, <code>who_is_it_for</code> (short + detailed), <code>benefits</code> (short + details), <code>eligibility_criteria[]</code> (with <code>mandatory</code> flag), <code>required_documents[]</code> (with <code>mandatory</code> flag), <code>application_process</code> (mode + steps), <code>common_confusions[]</code>, <code>limitations_and_notes[]</code>, <code>source_information</code> (official_website + myscheme_page + last_verified_on), <code>ai_usage_rules</code> (can_explain, can_simplify, can_decide_eligibility: <strong>false</strong>, can_guarantee_benefit: <strong>false</strong>)</p>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="7-complete-user-flow">7. Complete User Flow</h2>
+<div class="spacer"></div>
+<h3 id="happy-path-text-query">Happy Path — Text Query</h3>
+<div class="spacer"></div>
+<pre><code>1. User opens http://localhost:5173
+   → Landing screen: "A simple helper to understand government services"
+   → Click "Start"
+
+2. Language Selection
+   → User taps "हिंदी" card
+   → Hindi is selected (blue border, checkmark)
+   → Click "Continue"
+
+3. Interaction Mode
+   → Two cards: Speak (recommended) | Type
+   → User taps "Type"
+
+4. Type Screen
+   → Textarea with placeholder "E.g., How can I apply for a ration card?"
+   → User types: "PM Kisan scheme kya hai"
+   → Click "Ask →"
+   → setState({ currentQuery: 'PM Kisan scheme kya hai' })
+   → navigate('processing')
+
+5. Processing Screen
+   → Shows "Samajh raha hoon…"
+   → Shows query badge: "PM Kisan scheme kya hai"
+   → After 600ms: calls processQuery('PM Kisan scheme kya hai')
+     → searchSchemes() → PM_KISAN scores 0.82 (highest)
+     → detectIntent() → OVERVIEW
+     → generateExplanation(PM_KISAN, OVERVIEW)
+   → confidence = 0.82 ≥ 0.05 → setState results
+   → navigate('explanation')
+
+6. Explanation Screen
+   → Category badge: "Farmers / Income Support"
+   → Title: "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)"
+   → Summary: "Direct income support transferred to bank accounts"
+   → Who is it for bullets: landholding farmers, eKYC required, etc.
+   → Benefits: "Direct transfer of income support in equal instalments"
+   → Audio player (static UI)
+   → Disclaimer + official link: pmkisan.gov.in
+   → Buttons: Back | What's Next? | Documents needed | Step-by-step | Ask Another Question
+
+7. User clicks "Documents needed"
+   → Documents Screen
+   → Required: Aadhaar of farmer, Land ownership documents, Bank account details, Mobile number
+   → Optional: none
+   → "I have these documents →" → Guidance
+
+8. User clicks "I have these documents →"
+   → Guidance Screen
+   → Steps: Register via agriculture department / CSC / PM-KISAN portal → eKYC via OTP → Verification → Receive instalments
+   → Application mode badge: "Online / Offline / Assisted"
+   → "Mark Step Done →" advances step counter
+   → Official portal: pmkisan.gov.in
+
+9. User completes steps → WhatNext Screen
+   → Shows: "You asked about Pradhan Mantri Kisan Samman Nidhi"
+   → Summary text
+   → Buttons: Explain again | Documents | Steps | Ask another question
+   → Disclaimer reminder
+
+10. User clicks "Ask another question"
+    → State cleared: currentScheme, currentExplanation, currentQuery all null
+    → navigate('speak') → back to start for new query
+</code></pre>
+<div class="spacer"></div>
+<h3 id="clarification-path-vague-query">Clarification Path — Vague Query</h3>
+<div class="spacer"></div>
+<pre><code>User types "help me" → Processing → confidence = 0.02 &lt; 0.05
+→ navigate('clarification')
+→ Shows top 4 scheme cards: PMAY Urban, PMAY Gramin, PM Kisan, PM JAY
+→ User taps "Pradhan Mantri Awas Yojana Urban"
+→ detectIntent('help me') → OVERVIEW
+→ generateExplanation(PMAY_U, OVERVIEW)
+→ setState results → navigate('explanation')
+→ Shows PMAY Urban explanation
+</code></pre>
+<div class="spacer"></div>
+<h3 id="voice-path">Voice Path</h3>
+<div class="spacer"></div>
+<pre><code>User taps mic on SpeakScreen
+→ SpeechRecognition starts with lang='hi-IN,en-IN'
+→ window._saralaiRecognition = recognition
+→ navigate('listening')
+→ ListeningScreen gets recognition from window._saralaiRecognition
+→ User speaks: "Ghar ke liye sarkar madad"
+→ recognition.onresult → transcript = "गृह के लिए सरकार मदद" or English
+→ setState({ currentQuery: transcript })
+→ navigate('processing')
+→ [same as text query path from step 5]
+</code></pre>
+<div class="spacer"></div>
+<hr>
+<div class="spacer"></div>
+<h2 id="8-verification-status">8. Verification Status</h2>
+<div class="spacer"></div>
+<h3 id="confirmed-working-code-level-analysis">✅ Confirmed Working (Code-Level Analysis)</h3>
+<div class="spacer"></div>
+<table>
+<tr><th>Feature</th><th>How Verified</th></tr>
+<tr><td>All 12 routes registered</td><td><span class="fileref">router.js</span> routes object + <span class="fileref">main.js</span> screen mapping</td></tr>
+<tr><td>Schemes.json imported in ai.js</td><td><code>import schemes from './Schemes.json'</code></td></tr>
+<tr><td>State fields exist</td><td><span class="fileref">state.js</span> shows all required fields</td></tr>
+<tr><td>ProcessingScreen calls processQuery</td><td>Code verified</td></tr>
+<tr><td>ExplanationScreen reads state</td><td><span class="fileref">getState().currentExplanation</span></td></tr>
+<tr><td>DocumentsScreen reads scheme.required_documents</td><td>Code verified</td></tr>
+<tr><td>GuidanceScreen reads application_process.steps</td><td>Code verified</td></tr>
+<tr><td>ClarificationScreen reads topMatches</td><td>Code verified</td></tr>
+<tr><td>WhatNextScreen reads currentScheme</td><td>Code verified</td></tr>
+<tr><td>Web Speech API in SpeakScreen</td><td><code>new SpeechRecognition()</code> call present</td></tr>
+<tr><td>Speech result → state.currentQuery</td><td>ListeningScreen.onresult verified</td></tr>
+<tr><td>Confidence threshold 0.05</td><td>ProcessingScreen logic verified</td></tr>
+<tr><td>Fallback on no speech support</td><td><span class="fileref">navigate('type')</span> in SpeakScreen</td></tr>
+</table>
+<div class="spacer"></div>
+<h3 id="how-to-manually-test">📋 How to Manually Test</h3>
+<div class="spacer"></div>
+<pre><code>1. npm run dev  (in c:\Users\siddh\Desktop\SaralAI)
+2. Open http://localhost:5173
+
+Happy path:
+→ Start → English → Continue → Type → "PM Kisan scheme kya hai" → Ask
+→ Wait 2s → Explanation screen should show "Pradhan Mantri Kisan Samman Nidhi"
+→ Click "Documents needed" → Should show Aadhaar, Land docs, Bank account
+→ Click "I have these documents" → Should show PM Kisan steps
+
+Clarification path:
+→ Type → "help" → Ask
+→ Should show clarification with 4 scheme cards
+
+Voice input:
+→ Start → English → Continue → Speak → tap mic
+→ Say "Ayushman Bharat" → should navigate through processing to Ayushman scheme
+
+Quick chips:
+→ #speak → click "PM Kisan" chip → should bypass voice and show PM-KISAN explanation
+</code></pre>
+<div class="spacer"></div>
+<h3 id="known-frontend-limitations-next-steps">⚠️ Known Frontend Limitations (Next Steps)</h3>
+<div class="spacer"></div>
+<table>
+<tr><th>Limitation</th><th>Impact</th><th>Fix</th></tr>
+<tr><td>AudioPlayer is static UI</td><td>Can't listen to explanations</td><td>Connect TTS API</td></tr>
+<tr><td>Web Speech API only works in Chrome</td><td>Firefox/Safari users must type</td><td>Server-side STT</td></tr>
+<tr><td>No real language switching in UI text</td><td>UI stays English even if Hindi selected</td><td>i18n text maps</td></tr>
+<tr><td>Keyword search misses Hinglish phrases</td><td>Some queries won't match</td><td>LLM intent detection</td></tr>
+<tr><td>Step "Mark Done" re-navigates (flicker)</td><td>Minor UX issue</td><td>State-based re-render</td></tr>
+</table>
+<div class="spacer"></div>
+
+</div>
+</body>
+</html>

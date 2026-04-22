@@ -1,0 +1,17 @@
+# railway.toml — Railway Deployment Configuration
+# -------------------------------------------------
+# Railway reads this file to know how to build and run your app.
+# https://docs.railway.app/reference/config-as-code
+
+[build]
+builder = "DOCKERFILE"          # Use our Dockerfile instead of auto-detecting
+dockerfilePath = "Dockerfile"   # Location of the Dockerfile
+
+[deploy]
+startCommand = "uvicorn main:app --host 0.0.0.0 --port $PORT --workers 2"
+# $PORT is automatically set by Railway
+
+healthcheckPath = "/api/health"            # Railway pings this to check app is alive
+healthcheckTimeout = 300                   # 5 minutes for startup (includes DB setup)
+restartPolicyType = "ON_FAILURE"           # Auto-restart if the app crashes
+restartPolicyMaxRetries = 10

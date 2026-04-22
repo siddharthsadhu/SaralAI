@@ -90,7 +90,7 @@ export function initInteractionModeScreen() {
 // Interaction mode screen styles
 export const interactionModeStyles = `
 .interaction-mode-screen {
-  background: linear-gradient(180deg, var(--color-bg) 0%, #F0F4FF 100%);
+  background: transparent;
 }
 
 .interaction-header {
@@ -138,7 +138,7 @@ export const interactionModeStyles = `
 
 .interaction-card-primary {
   border-color: var(--color-primary);
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(37, 99, 235, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.06) 0%, rgba(124, 58, 237, 0.12) 100%);
 }
 
 .interaction-card-icon {

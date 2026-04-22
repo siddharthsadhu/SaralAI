@@ -92,7 +92,7 @@ export function initLanguageScreen() {
 // Language screen styles
 export const languageStyles = `
 .language-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .language-header {

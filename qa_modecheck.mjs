@@ -1,0 +1,15 @@
+import puppeteer from 'puppeteer';
+const base='http://localhost:5175';
+const browser=await puppeteer.launch({headless:'new'});
+const page=await browser.newPage();
+await page.goto(base,{waitUntil:'networkidle2'});
+await page.click('#start-btn');
+await page.waitForSelector('#type-option');
+await page.click('#type-option');
+await page.waitForSelector('#question-input');
+await page.$eval('#question-input',el=>{el.value='How to apply ration card'; el.dispatchEvent(new Event('input',{bubbles:true}));});
+await page.click('#ask-btn');
+await page.waitForSelector('#processing-status');
+const status=await page.$eval('#processing-status',el=>el.textContent||'');
+console.log(status.trim());
+await browser.close();

@@ -7,7 +7,8 @@ import { Button } from '../components/Button.js';
 import { navigate } from '../router.js';
 import { getState, setState } from '../state.js';
 import { getIcon } from '../icons.js';
-import { generateExplanation, detectIntent } from '../ai.js';
+import { generateExplanation, detectIntent, USE_BACKEND } from '../ai.js';
+import { getLocalLabel } from '../utils/labels.js';
 
 /** Category emoji map */
 const CATEGORY_ICONS = {
@@ -31,7 +32,8 @@ function getEmoji(category) {
  * Render clarification screen
  */
 export function ClarificationScreen() {
-  const { topMatches, currentQuery } = getState();
+  const { topMatches, currentQuery, detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
 
   // Show top 4 matching schemes as selectable cards
   const matchCards = (topMatches || []).slice(0, 4);
@@ -45,14 +47,14 @@ export function ClarificationScreen() {
         <div class="container">
 
           <div class="clarification-header animate-fadeIn">
-            <h1 class="heading-2">Can you clarify?</h1>
-            <p class="text-body">I want to make sure I give you the right information.</p>
+            <h1 class="heading-2">${getLocalLabel('can_you_clarify', langCode)}</h1>
+            <p class="text-body">${getLocalLabel('want_right_info', langCode)}</p>
             ${currentQuery ? `<div class="clarification-query-badge">"${currentQuery}"</div>` : ''}
           </div>
 
           ${hasMatches ? `
             <div class="clarification-schemes animate-slideUp">
-              <p class="clarification-hint">Which scheme are you asking about?</p>
+              <p class="clarification-hint">${getLocalLabel('which_scheme', langCode)}</p>
               <div class="clarification-scheme-cards">
                 ${matchCards.map((match, i) => `
                   <button 
@@ -73,21 +75,21 @@ export function ClarificationScreen() {
           ` : `
             <div class="clarification-no-match animate-slideUp">
               <div class="clarification-no-match-icon">🔍</div>
-              <p class="text-body">I could not find a matching scheme. Try asking differently.</p>
+              <p class="text-body">${getLocalLabel('no_match_found', langCode)}</p>
             </div>
           `}
 
           <div class="clarification-divider">
-            <span>or ask again</span>
+            <span>${getLocalLabel('or_ask_again', langCode)}</span>
           </div>
 
           <div class="clarification-micro animate-slideUp">
-            <p class="clarification-mic-hint">Speak or type your question again</p>
+            <p class="clarification-mic-hint">${getLocalLabel('speak_or_type_again', langCode)}</p>
             <div class="clarification-mic-row">
-              ${MicButtonSmall({ id: 'clarify-mic-btn', text: 'Speak to clarify' })}
+              ${MicButtonSmall({ id: 'clarify-mic-btn', text: getLocalLabel('speak_to_clarify', langCode) })}
             </div>
             ${Button({
-    text: 'Type your question',
+    text: getLocalLabel('type_your_question', langCode),
     icon: 'arrowRight',
     iconPosition: 'right',
     variant: 'secondary',
@@ -97,10 +99,10 @@ export function ClarificationScreen() {
           </div>
 
           <div class="clarification-examples animate-slideUp">
-            <p class="clarification-examples-title">Try asking:</p>
+            <p class="clarification-examples-title">${getLocalLabel('try_asking', langCode)}</p>
             <div class="clarification-example-chips">
-              <button class="type-chip" data-query="PM Kisan scheme for farmers">PM Kisan (Farmers)</button>
-              <button class="type-chip" data-query="Pradhan Mantri Awas Yojana housing">PMAY Housing</button>
+              <button class="type-chip" data-query="PM Kisan scheme for farmers">PM Kisan</button>
+              <button class="type-chip" data-query="Pradhan Mantri Awas Yojana housing">PMAY</button>
               <button class="type-chip" data-query="Ayushman Bharat health insurance">Ayushman Bharat</button>
               <button class="type-chip" data-query="ration card food scheme">Ration Card</button>
               <button class="type-chip" data-query="Jan Dhan bank account">Jan Dhan</button>
@@ -128,6 +130,14 @@ export function initClarificationScreen() {
       const selectedScheme = topMatches[idx]?.scheme;
       if (!selectedScheme) return;
 
+      if (USE_BACKEND) {
+        // Feed the selected scheme back into the processing engine for full data fetching
+        setState({ currentQuery: selectedScheme.scheme_name });
+        navigate('processing');
+        return;
+      }
+
+      // Fallback for offline Client-side mode
       const intent = detectIntent(currentQuery || '');
       const explanation = generateExplanation(selectedScheme, intent);
 
@@ -162,7 +172,7 @@ export function initClarificationScreen() {
 // Clarification screen styles
 export const clarificationStyles = `
 .clarification-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .clarification-header {

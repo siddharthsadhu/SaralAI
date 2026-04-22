@@ -4,6 +4,7 @@
 
 const routes = {
   landing: 'landing',
+  auth: 'auth',
   language: 'language',
   interactionmode: 'interactionmode',
   speak: 'speak',
@@ -14,7 +15,9 @@ const routes = {
   guidance: 'guidance',
   documents: 'documents',
   clarification: 'clarification',
-  whatnext: 'whatnext'
+  whatnext: 'whatnext',
+  services: 'services',
+  help: 'help'
 };
 
 let currentRoute = null;
@@ -33,7 +36,17 @@ function initRouter() {
  */
 function handleHashChange() {
   const hash = window.location.hash.slice(1) || 'landing';
-  const route = hash.replace('/', '');
+  let route = hash.replace('/', '');
+
+  // Auth Guard: Force login if not authenticated
+  const publicRoutes = ['landing', 'auth'];
+  if (!publicRoutes.includes(route)) {
+    const token = localStorage.getItem('saralai_token');
+    if (!token) {
+      route = 'auth';
+      window.location.hash = 'auth';
+    }
+  }
 
   if (route !== currentRoute) {
     currentRoute = route;

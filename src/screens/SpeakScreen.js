@@ -1,14 +1,20 @@
 /**
- * Speak Screen — Voice Query Input with Web Speech API
+ * Speak Screen — Voice Query Input
+ * Backend mode:     MediaRecorder → WAV → Sarvam Saaras v3 (auto language detect)
+ * Client-side mode: Web Speech API → text → client-side keyword search
  */
 import { Header, initHeader } from '../components/Header.js';
 import { MicButton } from '../components/MicButton.js';
 import { Button } from '../components/Button.js';
 import { navigate } from '../router.js';
-import { setState } from '../state.js';
+import { setState, getState } from '../state.js';
+import { transcribeAudio, USE_BACKEND } from '../ai.js';
+import { WavRecorder } from '../utils/wavRecorder.js';
+import { getLocalLabel } from '../utils/labels.js';
 
-// Module-level speech recognition instance
-let recognition = null;
+// Module-level references
+let recognition   = null;   // Web Speech API (client-side mode)
+let wavRecorder   = null;   // WavRecorder (backend mode)
 
 /**
  * Check if Web Speech API is supported
@@ -17,15 +23,14 @@ function isSpeechSupported() {
   return 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
 }
 
-/**
- * Get SpeechRecognition constructor
- */
 function getSpeechRecognition() {
   return window.SpeechRecognition || window.webkitSpeechRecognition;
 }
 
 export function SpeakScreen() {
-  const hasSpeech = isSpeechSupported();
+  const hasSpeech = USE_BACKEND ? true : isSpeechSupported();
+  const { detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
 
   return `
     <div class="screen speak-screen">
@@ -33,25 +38,25 @@ export function SpeakScreen() {
       
       <div class="screen-content screen-center">
         <div class="speak-content animate-fadeIn">
-          <h1 class="speak-title">Speak in your language</h1>
+          <h1 class="speak-title">${getLocalLabel('speak_in_your_language', langCode)}</h1>
           <p class="speak-example">
-            Try asking: <em>'Ghar ke liye sarkari madad kaise milegi?'</em>
+            ${getLocalLabel('try_asking', langCode)} <em>'Ghar ke liye sarkari madad kaise milegi?'</em>
           </p>
           
           <div class="speak-mic">
             ${MicButton({ size: 'lg', id: 'main-mic-btn' })}
           </div>
 
-          <p class="speak-tap-hint">Tap the mic to start speaking</p>
+          <p class="speak-tap-hint">${getLocalLabel('tap_mic_to_start', langCode)}</p>
 
-          ${!hasSpeech ? `
+          ${!hasSpeech && !USE_BACKEND ? `
             <div class="speak-no-voice-note">
-              🎙️ Voice input is not supported in this browser. Please use the Type option.
+              🎙️ ${getLocalLabel('type_instead', langCode)}
             </div>
           ` : ''}
 
           <div class="speak-examples-row">
-            <p class="speak-examples-label">Or try these:</p>
+            <p class="speak-examples-label">${getLocalLabel('or_try_these', langCode)}</p>
             <div class="speak-example-chips">
               <button class="type-chip" data-query="PM Kisan scheme kya hai">PM Kisan</button>
               <button class="type-chip" data-query="Pradhan Mantri Awas Yojana Urban housing">PMAY</button>
@@ -62,7 +67,7 @@ export function SpeakScreen() {
           
           <div class="speak-alternative">
             ${Button({
-    text: 'Type instead',
+    text: getLocalLabel('type_instead', langCode),
     icon: 'keyboard',
     variant: 'ghost',
     id: 'type-btn'
@@ -72,7 +77,7 @@ export function SpeakScreen() {
       </div>
       
       <footer class="speak-footer">
-        <p class="speak-footer-text">Powered by verified government information</p>
+        <p class="speak-footer-text">${getLocalLabel('powered_by', langCode)}</p>
       </footer>
     </div>
   `;
@@ -85,22 +90,42 @@ export function initSpeakScreen() {
   const typeBtn = document.getElementById('type-btn');
 
   if (micBtn) {
-    micBtn.addEventListener('click', () => {
-      if (isSpeechSupported()) {
-        // Start speech recognition and navigate to listening screen
+    micBtn.addEventListener('click', async () => {
+      if (USE_BACKEND) {
+        // ── Backend mode: WavRecorder → Saaras v3 ────────────────────────
+        // WavRecorder strictly captures 16-bit PCM WAV to guarantee compatibility
+        // with Sarvam AI requirements across all browsers.
+        try {
+          wavRecorder = new WavRecorder();
+          await wavRecorder.start();
+
+          // Store recorder reference so ListeningScreen can stop it
+          window._saralaiWavRecorder = wavRecorder;
+          window._saralaiRecognition = null;   // Not using Web Speech API in backend mode
+          
+          navigate('listening');
+
+        } catch (err) {
+          console.error('Microphone access denied:', err);
+          // Fallback: go to type screen if mic unavailable
+          navigate('type');
+        }
+
+      } else if (isSpeechSupported()) {
+        // ── Client-side mode: Web Speech API ───────────────────────────────
         const SpeechRecognition = getSpeechRecognition();
         recognition = new SpeechRecognition();
         recognition.lang = 'hi-IN,en-IN';
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
 
-        // Store reference globally so ListeningScreen can access it
-        window._saralaiRecognition = recognition;
+        window._saralaiRecognition    = recognition;
+        window._saralaiWavRecorder    = null;
+        window._saralaiAudioBlob      = null;
 
         recognition.start();
         navigate('listening');
       } else {
-        // Fallback to type screen
         navigate('type');
       }
     });
@@ -122,9 +147,11 @@ export function initSpeakScreen() {
   });
 }
 
+
+
 export const speakStyles = `
 .speak-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .speak-content {

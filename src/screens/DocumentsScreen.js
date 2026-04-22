@@ -8,19 +8,25 @@ import { MicButtonSmall } from '../components/MicButton.js';
 import { navigate } from '../router.js';
 import { getState } from '../state.js';
 import { getIcon } from '../icons.js';
+import { getLocalLabel } from '../utils/labels.js';
+import { requestTTS, USE_BACKEND } from '../ai.js';
 
 /**
  * Render documents screen
  * @returns {string} Screen HTML
  */
 export function DocumentsScreen() {
-  const { currentScheme, currentExplanation } = getState();
+  const { currentScheme, currentExplanation, detectedLanguageCode, selectedLanguage } = getState();
+  const langCode = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'en-IN');
 
-  const schemeName = currentExplanation?.schemeName || currentScheme?.scheme_name || 'this scheme';
-  const documents = currentScheme?.required_documents || [];
+  const schemeName = currentExplanation?.schemeName || currentScheme?.scheme_name || '';
 
-  const mandatoryDocs = documents.filter(d => d.mandatory);
-  const optionalDocs = documents.filter(d => !d.mandatory);
+  const fromExplanation = (currentExplanation?.documents || []).map(d => ({
+    document_name: d.name,
+    mandatory: d.mandatory !== false,
+  }));
+  const fromScheme = currentScheme?.required_documents || [];
+  const documents = fromExplanation.length > 0 ? fromExplanation : fromScheme;
 
   // Fallback document list if no scheme data
   const fallbackDocs = [
@@ -42,21 +48,21 @@ export function DocumentsScreen() {
         <div class="container">
 
           <div class="documents-header animate-fadeIn">
-            <h1 class="heading-2">Documents You May Need</h1>
-            <p class="text-body">For <strong>${schemeName}</strong></p>
-            <p class="documents-subtitle">Please keep original documents ready. Requirements may vary by location.</p>
+            <h1 class="heading-2">${getLocalLabel('documents_needed', langCode)}</h1>
+            <p class="text-body">${getLocalLabel('for_scheme', langCode)} <strong>${schemeName}</strong></p>
+            <p class="documents-subtitle">${getLocalLabel('docs_subtitle', langCode)}</p>
           </div>
 
           ${mandatoryToShow.length > 0 ? `
             <div class="documents-section animate-slideUp">
               <div class="documents-section-label documents-required-label">
-                ${getIcon('check', 'icon icon-sm')} Required Documents
+                ${getIcon('check', 'icon icon-sm')} ${getLocalLabel('required', langCode)}
               </div>
               <div class="documents-list">
                 ${mandatoryToShow.map((doc, i) => ChecklistItem({
     id: `doc-${i}`,
     title: doc.document_name,
-    subtitle: 'Required',
+    subtitle: getLocalLabel('required', langCode),
     mandatory: true
   })).join('')}
               </div>
@@ -66,13 +72,13 @@ export function DocumentsScreen() {
           ${optionalToShow.length > 0 ? `
             <div class="documents-section animate-slideUp">
               <div class="documents-section-label documents-optional-label">
-                ${getIcon('arrowRight', 'icon icon-sm')} Optional / May Be Needed
+                ${getIcon('arrowRight', 'icon icon-sm')} ${getLocalLabel('optional', langCode)}
               </div>
               <div class="documents-list">
                 ${optionalToShow.map((doc, i) => ChecklistItem({
     id: `opt-doc-${i}`,
     title: doc.document_name,
-    subtitle: 'May be required',
+    subtitle: getLocalLabel('optional', langCode),
     mandatory: false
   })).join('')}
               </div>
@@ -81,23 +87,23 @@ export function DocumentsScreen() {
 
           <div class="documents-note animate-slideUp">
             ${getIcon('government', 'icon icon-sm')}
-            <p>Document requirements may vary by State and local office. Always check with your local authority before applying.</p>
+            <p>${getLocalLabel('docs_note', langCode)}</p>
           </div>
 
           <div class="documents-actions">
             <div class="documents-voice-row">
-              ${MicButtonSmall({ id: 'read-docs-btn', text: 'Read this to me' })}
+              ${MicButtonSmall({ id: 'read-docs-btn', text: getLocalLabel('read_this_to_me', langCode) })}
             </div>
             ${Button({
-    text: 'I have these documents →',
+    text: `${getLocalLabel('i_have_all_docs', langCode)} →`,
     variant: 'primary',
     size: 'lg',
     fullWidth: true,
     id: 'have-docs-btn'
   })}
             ${Button({
-    text: 'Back to Explanation',
-    variant: 'ghost',
+    text: getLocalLabel('back_to_explanation', langCode),
+    variant: 'secondary',
     fullWidth: true,
     id: 'back-btn'
   })}
@@ -116,16 +122,61 @@ export function initDocumentsScreen() {
   initHeader();
   document.getElementById('have-docs-btn')?.addEventListener('click', () => navigate('guidance'));
   document.getElementById('back-btn')?.addEventListener('click', () => window.history.back());
-  document.getElementById('read-docs-btn')?.addEventListener('click', () => {
-    // Web Speech API TTS — read document names
+
+  // Interactive Checklist Checkboxes
+  const checklistItems = document.querySelectorAll('.checklist-item');
+  checklistItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      // Toggle class for visual checkmark
+      item.classList.toggle('checklist-item-checked');
+      
+      const checkboxDiv = item.querySelector('.checklist-checkbox');
+      const isChecked = item.classList.contains('checklist-item-checked');
+      
+      if (isChecked) {
+        // Add check SVG
+        import('../icons.js').then(({ getIcon }) => {
+            checkboxDiv.innerHTML = getIcon('check', 'icon icon-sm');
+        });
+      } else {
+        // Remove check SVG
+        checkboxDiv.innerHTML = '';
+      }
+    });
+  });
+
+  document.getElementById('read-docs-btn')?.addEventListener('click', async () => {
+    const { currentScheme, currentExplanation, detectedLanguageCode, selectedLanguage } = getState();
+    const lang = detectedLanguageCode || (selectedLanguage ? `${selectedLanguage}-IN` : 'hi-IN');
+
+    const fromExp = (currentExplanation?.documents || []).map(d => ({
+      document_name: d.name,
+      mandatory: d.mandatory !== false,
+    }));
+    const docs = fromExp.length > 0 ? fromExp : (currentScheme?.required_documents || []);
+
+    const req = getLocalLabel('required', lang);
+    const opt = getLocalLabel('optional', lang);
+    const text = docs.length > 0
+      ? docs.map(d => `${d.mandatory ? req : opt}: ${d.document_name}`).join('. ')
+      : 'Please check the required documents list with your local authority.';
+
+    if (USE_BACKEND) {
+      try {
+        const url = await requestTTS(text, lang);
+        const audio = new Audio(url);
+        audio.play();
+        audio.addEventListener('ended', () => URL.revokeObjectURL(url), { once: true });
+      } catch (e) {
+        console.error('[Documents TTS]', e);
+        window.SaralAI?.showToast?.('Could not play audio. Check backend and Sarvam settings.');
+      }
+      return;
+    }
+
     if ('speechSynthesis' in window) {
-      const { currentScheme } = getState();
-      const docs = currentScheme?.required_documents || [];
-      const text = docs.length > 0
-        ? 'You will need: ' + docs.map(d => d.document_name).join(', ')
-        : 'Please check the required documents list with your local authority.';
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-IN';
+      utterance.lang = lang.includes('-') ? lang : `${lang}-IN`;
       speechSynthesis.speak(utterance);
     }
   });
@@ -134,7 +185,7 @@ export function initDocumentsScreen() {
 // Documents screen styles
 export const documentsStyles = `
 .documents-screen {
-  background-color: var(--color-bg);
+  background-color: transparent;
 }
 
 .documents-header {

@@ -1,9 +1,24 @@
 /**
- * SaralAI — Client-side AI Query Engine
- * No backend required. Searches Schemes.json using keyword scoring + intent detection.
+ * SaralAI — AI Query Engine (Dual Mode)
+ * ──────────────────────────────────────
+ * Mode 1 (VITE_USE_BACKEND=false): Client-side keyword search using Schemes.json
+ * Mode 2 (VITE_USE_BACKEND=true):  Full Sarvam AI backend pipeline
+ *   STT  → Saaras v3  (POST /api/speech/transcribe)
+ *   LLM  → sarvam-m   (POST /api/query)
+ *   TTS  → Bulbul v3  (POST /api/tts/speak) ← ON-DEMAND ONLY (user taps Listen)
+ *   Note: Translation (Mayura v1) runs server-side inside /api/query
+ *
+ * TTS API Credit Conservation:
+ *   TTS is NEVER called automatically. The backend returns translated text only.
+ *   TTS is only requested when the user explicitly taps the 🔊 Listen button.
  */
 
 import schemes from './Schemes.json';
+
+// ─── Environment ──────────────────────────────────────────────────────────────
+
+const USE_BACKEND  = import.meta.env.VITE_USE_BACKEND === 'true';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ─── Keyword Intent Maps ─────────────────────────────────────────────────────
 
@@ -33,7 +48,6 @@ const INTENT_KEYWORDS = {
 
 // ─── Scheme Search Keywords ───────────────────────────────────────────────────
 
-/** Keywords associated with each scheme (for matching user queries) */
 const SCHEME_KEYWORDS = {
      PMAY_U: [
           'pmay', 'awas', 'housing', 'urban', 'city', 'shahar', 'ghar', 'house',
@@ -92,114 +106,66 @@ const SCHEME_KEYWORDS = {
      ]
 };
 
-// ─── Core Functions ───────────────────────────────────────────────────────────
+// ─── Client-Side Helpers ──────────────────────────────────────────────────────
 
-/**
- * Normalize text for comparison: lowercase, trim, remove punctuation
- */
 function normalize(text) {
      return text.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-/**
- * Score a query against a scheme using keyword overlap
- * @param {string} query - Normalized user query
- * @param {string} schemeId - Scheme ID key
- * @param {object} scheme - Scheme object
- * @returns {number} Score 0–1
- */
 function scoreScheme(query, schemeId, scheme) {
      const keywords = SCHEME_KEYWORDS[schemeId] || [];
      let score = 0;
      let totalWeight = 0;
 
-     // Direct keyword matches (primary signal)
      for (const kw of keywords) {
           totalWeight += 1;
-          if (query.includes(normalize(kw))) {
-               score += 1;
-          }
+          if (query.includes(normalize(kw))) score += 1;
      }
 
-     // Bonus: scheme name contains query words
      const schemeName = normalize(scheme.scheme_name);
      const queryWords = query.split(' ').filter(w => w.length > 2);
      for (const word of queryWords) {
-          if (schemeName.includes(word)) {
-               score += 0.5;
-               totalWeight += 0.5;
-          }
+          if (schemeName.includes(word)) { score += 0.5; totalWeight += 0.5; }
      }
 
-     // Bonus: category match
      const category = normalize(scheme.category || '');
      for (const word of queryWords) {
-          if (category.includes(word)) {
-               score += 0.3;
-               totalWeight += 0.3;
-          }
+          if (category.includes(word)) { score += 0.3; totalWeight += 0.3; }
      }
 
      return totalWeight > 0 ? score / totalWeight : 0;
 }
 
-/**
- * Search schemes by user query and return ranked results
- * @param {string} query - User's question (any language)
- * @returns {Array<{scheme, confidence}>} Ranked scheme matches
- */
 export function searchSchemes(query) {
      const normalizedQuery = normalize(query);
-
      const scored = schemes.map(scheme => ({
           scheme,
           confidence: scoreScheme(normalizedQuery, scheme.scheme_id, scheme)
      }));
-
-     // Sort descending by confidence
      scored.sort((a, b) => b.confidence - a.confidence);
-
      return scored;
 }
 
-/**
- * Detect user intent from query
- * @param {string} query - User's question
- * @returns {'OVERVIEW' | 'ELIGIBILITY' | 'DOCUMENTS' | 'STEPS'} Intent
- */
 export function detectIntent(query) {
      const normalizedQuery = normalize(query);
      const scores = {};
-
      for (const [intent, keywords] of Object.entries(INTENT_KEYWORDS)) {
           scores[intent] = keywords.filter(kw => normalizedQuery.includes(normalize(kw))).length;
      }
-
-     // Find highest scoring intent
      const topIntent = Object.entries(scores).sort((a, b) => b[1] - a[1])[0];
      return topIntent[1] > 0 ? topIntent[0] : 'OVERVIEW';
 }
 
-/**
- * Generate a structured explanation from a scheme + intent
- * @param {object} scheme - Scheme object from Schemes.json
- * @param {string} intent - Intent type
- * @returns {object} Explanation data object
- */
 export function generateExplanation(scheme, intent) {
      const eligibilityPoints = scheme.eligibility_criteria
           ? scheme.eligibility_criteria.map(c => c.condition)
           : [];
-
      const benefitPoints = scheme.benefits?.details || [scheme.benefits?.short || ''];
-
      const steps = scheme.application_process?.steps || [];
-
      const documents = scheme.required_documents
           ? scheme.required_documents.map(d => ({ name: d.document_name, mandatory: d.mandatory }))
           : [];
 
-     // Lead with the most relevant info based on intent
      let summary = '';
      let leadPoints = [];
 
@@ -216,14 +182,10 @@ export function generateExplanation(scheme, intent) {
                summary = `How to apply for ${scheme.scheme_name}`;
                leadPoints = steps;
                break;
-          default: // OVERVIEW
+          default:
                summary = scheme.who_is_it_for?.short || scheme.scheme_name;
                leadPoints = benefitPoints;
      }
-
-     const confusions = scheme.common_confusions || [];
-     const limitations = scheme.limitations_and_notes || [];
-     const source = scheme.source_information?.official_website || '';
 
      return {
           schemeId: scheme.scheme_id,
@@ -236,35 +198,207 @@ export function generateExplanation(scheme, intent) {
           benefitPoints,
           steps,
           documents,
-          confusions,
-          limitations: limitations.slice(0, 2),
-          officialSource: source,
+          confusions: scheme.common_confusions || [],
+          limitations: (scheme.limitations_and_notes || []).slice(0, 2),
+          officialSource: scheme.source_information?.official_website || '',
           applicationMode: scheme.application_process?.mode || '',
           disclaimer: 'This information is for guidance only. For official decisions, visit the government portal.'
      };
 }
 
-/**
- * Full query pipeline: search + intent + explanation
- * @param {string} query - User's question
- * @returns {{ result: object|null, confidence: number, topMatches: Array }}
- */
 export function processQuery(query) {
      if (!query || query.trim().length < 2) {
           return { result: null, confidence: 0, topMatches: [] };
      }
-
      const ranked = searchSchemes(query);
      const topMatch = ranked[0];
      const confidence = topMatch?.confidence || 0;
      const topMatches = ranked.slice(0, 4);
 
-     if (confidence < 0.05) {
-          return { result: null, confidence, topMatches };
-     }
+     if (confidence < 0.05) return { result: null, confidence, topMatches };
 
      const intent = detectIntent(query);
      const result = generateExplanation(topMatch.scheme, intent);
-
      return { result, confidence, topMatches };
 }
+
+// ─── Backend API Helpers (Sarvam AI) ─────────────────────────────────────────
+
+/**
+ * Transcribe audio using Sarvam Saaras v3 via backend.
+ * Saaras AUTO-DETECTS the language — no need to pass language.
+ *
+ * @param {Blob|ArrayBuffer} audioBlob — Audio data from MediaRecorder
+ * @returns {Promise<{transcript: string, languageCode: string, confidence: number}>}
+ */
+export async function transcribeAudio(audioBlob) {
+     const formData = new FormData();
+     const isWav = audioBlob && audioBlob.type && audioBlob.type.includes('wav');
+     const audioFile = audioBlob instanceof Blob
+          ? audioBlob
+          : new Blob([audioBlob], { type: isWav ? 'audio/wav' : 'audio/webm' });
+     
+     const filename = isWav ? 'recording.wav' : 'recording.webm';
+     formData.append('audio', audioFile, filename);
+
+     const response = await fetch(`${API_BASE_URL}/api/speech/transcribe`, {
+          method: 'POST',
+          body: formData,
+          // Do NOT set Content-Type — fetch sets it automatically with boundary for FormData
+     });
+
+     if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.detail || `STT failed: HTTP ${response.status}`);
+     }
+
+     const data = await response.json();
+     return {
+          transcript:    data.transcript,
+          languageCode:  data.language_detected,  // BCP-47 e.g. "hi-IN"
+          confidence:    data.confidence,
+     };
+}
+
+/**
+ * Send a text query to the backend Sarvam AI pipeline.
+ * Backend runs: local DB search → sarvam-m LLM → Mayura v1 translation
+ * Returns translated text ready to display — NO TTS is called here.
+ *
+ * @param {string} query          — User's question
+ * @param {string} languageCode   — Short code ("hi") OR BCP-47 ("hi-IN")
+ * @param {string} sessionId      — Optional session ID for analytics
+ * @returns {Promise<object>}     — Full QueryResponse from backend
+ */
+export async function queryBackend(query, languageCode = 'hi', sessionId = null) {
+     // Normalise: accept both "hi-IN" and "hi" — backend QueryRequest uses short codes
+     const shortCode = languageCode.includes('-')
+          ? languageCode.split('-')[0]
+          : languageCode;
+
+     const payload = {
+          query,
+          language:   shortCode,
+          session_id: sessionId,
+          use_ai:     true,
+     };
+
+     const response = await fetch(`${API_BASE_URL}/api/query`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
+     });
+
+     if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.detail || `Query failed: HTTP ${response.status}`);
+     }
+
+     return response.json();
+}
+
+/**
+ * Request TTS audio from Sarvam Bulbul v3 via backend.
+ *
+ * ⚠️  CALL THIS ONLY WHEN USER TAPS THE LISTEN BUTTON.
+ *     Never call automatically — it consumes Bulbul v3 API credits.
+ *
+ * @param {string} text         — Translated text to speak (from queryBackend response)
+ * @param {string} languageCode — BCP-47 code (e.g. "hi-IN") from Saaras or state
+ * @returns {Promise<string>}   — Object URL to play with <audio> element
+ */
+export async function requestTTS(text, languageCode = 'hi-IN') {
+     // Normalise: if short code passed, convert to BCP-47
+     const bcp47 = languageCode.includes('-')
+          ? languageCode
+          : `${languageCode}-IN`;
+
+     const payload = { text, language: bcp47 };
+
+     const response = await fetch(`${API_BASE_URL}/api/tts/speak`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload),
+     });
+
+     if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.detail || `TTS failed: HTTP ${response.status}`);
+     }
+
+     // Convert WAV bytes to a blob URL the <audio> element can play
+     const audioBlob = await response.blob();
+     return URL.createObjectURL(audioBlob);
+}
+
+// ─── Full Query Pipeline (Backend Mode) ──────────────────────────────────────
+
+/**
+ * Full backend query pipeline.
+ * Equivalent to processQuery() but calls the Sarvam AI backend.
+ *
+ * @param {string} query        — User's question
+ * @param {string} languageCode — Language code (short or BCP-47)
+ * @param {string} sessionId    — Optional session ID
+ * @returns {Promise<object>}   — Processed result for state
+ */
+export async function processQueryBackend(query, languageCode = 'hi', sessionId = null) {
+     const apiResponse = await queryBackend(query, languageCode, sessionId);
+
+     if (apiResponse.type === 'clarification') {
+          return {
+               result:     null,
+               confidence: apiResponse.confidence,
+               topMatches: apiResponse.clarification_options.map(opt => ({
+                    scheme: {
+                         scheme_id:   opt.scheme_id,
+                         scheme_name: opt.scheme_name,
+                         category:    opt.category,
+                         who_is_it_for: { short: opt.short_description },
+                    },
+                    confidence: 0,
+               })),
+               apiResponse,
+          };
+     }
+
+     const content = apiResponse.content || {};
+
+     // Map backend response to the same shape as generateExplanation()
+     // so existing screens (ExplanationScreen, DocumentsScreen, etc.) work unchanged
+     const result = {
+          schemeId:          apiResponse.scheme_id || '',
+          schemeName:        content.scheme_name || '',
+          category:          content.category || '',
+          intent:            apiResponse.intent || 'OVERVIEW',
+          summary:           content.summary || '',       // Already translated by Mayura
+          leadPoints:        content.key_points || [],
+          eligibilityPoints: content.eligibility_points || [],
+          benefitPoints:     content.benefit_points || [],
+          steps:             content.steps || [],
+          documents:         (content.documents || []).map(d => ({
+               name:      d.name,
+               mandatory: d.mandatory,
+          })),
+          confusions:        [],
+          limitations:       [],
+          officialSource:    content.official_source || '',
+          applicationMode:   content.application_mode || '',
+          disclaimer:        content.disclaimer || '',
+          // Extra Sarvam-specific fields
+          aiUsed:            apiResponse.ai_used,
+          sourceType:        apiResponse.source_type,
+          sourceUrl:         apiResponse.source_url,
+          languageCode:      apiResponse.language_code,
+     };
+
+     return {
+          result,
+          confidence:  apiResponse.confidence,
+          topMatches:  [],
+          apiResponse,
+     };
+}
+
+// ─── Export mode flag ─────────────────────────────────────────────────────────
+export { USE_BACKEND };

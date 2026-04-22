@@ -23,9 +23,17 @@ const state = {
      // Query result state
      currentScheme: null,        // Full scheme object from Schemes.json
      currentIntent: null,        // 'OVERVIEW' | 'ELIGIBILITY' | 'DOCUMENTS' | 'STEPS'
-     currentExplanation: null,   // Result from generateExplanation()
+     currentExplanation: null,   // Result from generateExplanation() or backend API
      topMatches: [],             // Ranked scheme matches (for clarification screen)
-     queryHistory: []            // Previous queries this session
+     queryHistory: [],           // Previous queries this session
+     // Sarvam AI state
+     detectedLanguageCode: null, // BCP-47 code auto-detected by Saaras v3 (e.g. "hi-IN")
+                                 // Set after voice transcription; used for TTS language
+     apiResult: null,            // Full backend /api/query response (for backend mode)
+     translatedSummary: null,    // Mayura-translated text (ready to display + optional TTS)
+     ttsAvailable: false,        // True once translatedSummary is set (unlocks Listen button)
+     /** When set, Type screen pre-fills the question once (e.g. from Services browse). */
+     typeScreenPrefill: null,
 };
 
 const listeners = new Set();
