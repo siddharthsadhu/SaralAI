@@ -15,6 +15,10 @@ python-dotenv==1.0.1               # .env file support
 #   TTS   → Bulbul v3   (POST https://api.sarvam.ai/text-to-speech)
 requests>=2.31.0                   # Sync HTTP client used by Sarvam service calls
 
+# ─── Google Auth (OAuth 2.0 token verification) ───────────────────
+google-auth>=2.29.0                # Verify Google ID tokens
+google-auth-httplib2>=0.2.0        # HTTP transport for google-auth
+
 # ─── Database ─────────────────────────────────────────────────────
 sqlalchemy==2.0.32                 # ORM (Object Relational Mapper)
 asyncpg==0.29.0                    # Async PostgreSQL driver
