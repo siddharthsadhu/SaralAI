@@ -18,6 +18,7 @@ requests>=2.31.0                   # Sync HTTP client used by Sarvam service cal
 # ─── Google Auth (OAuth 2.0 token verification) ───────────────────
 google-auth>=2.29.0                # Verify Google ID tokens
 google-auth-httplib2>=0.2.0        # HTTP transport for google-auth
+PyJWT>=2.8.0                       # JWT token encode/decode (import jwt)
 
 # ─── Database ─────────────────────────────────────────────────────
 sqlalchemy==2.0.32                 # ORM (Object Relational Mapper)
