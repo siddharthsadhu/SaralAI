@@ -1,38 +1,28 @@
-# ─── Core Web Framework ───────────────────────────────────────────
+# ─── SaralAI Backend — Python Dependencies ───────────────────────
+# Last verified: 2026-04-23
+
+# Core Web Framework
 fastapi==0.111.0
-uvicorn[standard]==0.30.0          # ASGI server (runs FastAPI)
-python-multipart==0.0.9            # Required for file uploads (audio)
+uvicorn[standard]==0.30.0
+python-multipart==0.0.9
 
-# ─── Settings & Config ────────────────────────────────────────────
-pydantic-settings==2.3.0           # Typed environment variable loading
-python-dotenv==1.0.1               # .env file support
+# Settings & Config
+pydantic-settings==2.3.0
+python-dotenv==1.0.1
 
-# ─── Sarvam AI (replaces all Google AI packages) ──────────────────
-# Single HTTP client for all 4 Sarvam REST APIs:
-#   STT   → Saaras v3   (POST https://api.sarvam.ai/speech-to-text)
-#   LLM   → sarvam-m    (POST https://api.sarvam.ai/v1/chat/completions)
-#   Trans → Mayura v1   (POST https://api.sarvam.ai/translate)
-#   TTS   → Bulbul v3   (POST https://api.sarvam.ai/text-to-speech)
-requests>=2.31.0                   # Sync HTTP client used by Sarvam service calls
+# HTTP Clients
+requests>=2.31.0
+httpx==0.27.0
 
-# ─── Google Auth (OAuth 2.0 token verification) ───────────────────
-google-auth>=2.29.0                # Verify Google ID tokens
-google-auth-httplib2>=0.2.0        # HTTP transport for google-auth
-PyJWT>=2.8.0                       # JWT token encode/decode (import jwt)
+# Google Auth (OAuth 2.0 login)
+google-auth>=2.29.0
+google-auth-httplib2>=0.2.0
+PyJWT>=2.8.0
 
-# ─── Database ─────────────────────────────────────────────────────
-sqlalchemy==2.0.32                 # ORM (Object Relational Mapper)
-asyncpg==0.29.0                    # Async PostgreSQL driver
-psycopg2-binary==2.9.9             # Sync PostgreSQL driver (for Alembic)
-alembic==1.13.2                    # Database migrations
-aiosqlite==0.20.0                  # SQLite async driver (for local dev)
+# Database
+sqlalchemy==2.0.32
+asyncpg==0.29.0
+aiosqlite==0.20.0
 
-# ─── HTTP Utilities ───────────────────────────────────────────────
-httpx==0.27.0                      # Async HTTP client (for tests)
-
-# ─── Rate Limiting ────────────────────────────────────────────────
-slowapi==0.1.9                     # Rate limiting middleware
-
-# ─── Testing ──────────────────────────────────────────────────────
-pytest==8.3.1
-pytest-asyncio==0.23.6
+# Rate Limiting
+slowapi==0.1.9

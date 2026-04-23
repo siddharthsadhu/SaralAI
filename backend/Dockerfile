@@ -1,41 +1,34 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# SaralAI Backend Dockerfile
-# Build: docker build -t saralai-backend .
-# Run:   docker run -p 8000:8000 --env-file .env saralai-backend
+# SaralAI Backend — Production Dockerfile for Render
 # ─────────────────────────────────────────────────────────────────────────────
-
-# Start from the official Python 3.12 slim image (small, secure, no bloat)
 FROM python:3.12-slim
 
-# Set working directory inside the container
 WORKDIR /app
 
-# ── Install system dependencies ───────────────────────────────────────────────
-# libpq-dev: needed for psycopg2 (PostgreSQL adapter)
-# curl: used by Railway's health check
-# We clean up apt cache to keep the image small
-RUN apt-get update && apt-get install -y \
+# System dependencies for PostgreSQL + health checks
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Copy requirements first (Docker cache optimization) ───────────────────────
-# If only code changes but not requirements.txt, Docker uses cached pip install
+# Copy and install Python dependencies
+# NOTE: Any edit to this file busts the Docker cache for pip install
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    python -c "import google.auth; import jwt; import sqlalchemy; import asyncpg; print('✅ All packages installed')"
 
-# ── Copy all backend code ─────────────────────────────────────────────────────
+# Copy application code
 COPY . .
 
-# ── Expose port 8000 ──────────────────────────────────────────────────────────
-EXPOSE 8000
+# Render sets PORT env var; default to 8000 if not set
+ENV PORT=8000
 
-# ── Health check: Railway polls this to decide if the app is healthy ──────────
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
+EXPOSE ${PORT}
 
-# ── Start the server ──────────────────────────────────────────────────────────
-# --host 0.0.0.0  → listen on all interfaces (required in containers)
-# --port 8000     → match the EXPOSE above
-# --workers 2     → 2 Uvicorn worker processes (for multi-CPU handling)
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:${PORT}/api/health || exit 1
+
+# Use shell form so $PORT is expanded at runtime
+# Single worker for free-tier memory; 0.0.0.0 is mandatory for containers
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1
